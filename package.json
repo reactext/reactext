@@ -1,0 +1,24 @@
+{
+  "name": "reactext",
+  "version": "1.0.0",
+  "description": "A devTool that allows for easy state management when using React's Context API",
+  "main": "devtools.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reactext/reactext.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reactext/reactext/issues"
+  },
+  "homepage": "https://github.com/reactext/reactext#readme",
+  "dependencies": {
+    "request": "^2.85.0",
+    "require": "^2.4.20"
+  }
+}
