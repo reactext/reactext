@@ -25,7 +25,6 @@
       ]
     }
   ],
-  "devtools_page": "devtools.html",
   "web_accessible_resources": [
     "/backend/hook.js"
   ],
@@ -35,5 +34,8 @@
     },
     "default_popup": "popup/notify.html",
     "default_title": "Reactext"
+  },
+  "icons": {
+    "32": "assets/logo-32.png"
   }
 }
