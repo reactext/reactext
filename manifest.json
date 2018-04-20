@@ -1,12 +1,22 @@
 {
-    "name": "Reactext",
-    "version": "1.0.0",
-    "manifest_version": 2,
-    "description": "A devtool that allows for easy state management when using React's Context API",
-    "devtools_page": "devtools.html",
-    "permissions": [
-      "tabs",
-      "http://*/*",
-      "https://*/*"
-    ]
+  "name": "Reactext",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "A devtool that allows for easy state management when using React's Context API",
+  "devtools_page": "devtools.html",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": true
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"]
+  }],
+  "permissions": [
+    "tabs",
+    "http://*/*",
+    "https://*/*"
+  ]
 }
