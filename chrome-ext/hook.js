@@ -15,3 +15,4 @@ stateSet.forEach((e) => {
 });
 
 console.log('initialState => current', initialState.current);
+console.log('initialState => current => state.node', initialState.current.stateNode);
