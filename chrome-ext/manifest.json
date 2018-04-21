@@ -26,8 +26,7 @@
     }
   ],
   "web_accessible_resources": [
-    "/backend/hook.js",
-    "assets/logo-32.png"
+    "hook.js"
   ],
   "browser_action": {
     "default_icon": {

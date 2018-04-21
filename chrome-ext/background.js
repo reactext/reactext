@@ -22,7 +22,7 @@
 //     }
 //   }
 
-//   //listening to messages sent from devtools.js
+//   //listening to messages sent from panel.js; fired when postMessage
 //   port.onMessage.addListener(extensionListener);
 
 //   // to clean up data with disconnect
