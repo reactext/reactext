@@ -1,6 +1,5 @@
 //NOTES:
 // This script is ran as soon as the chrome devtools is open.
-
 console.log("hello from devtools");
 
 //create the initial panel.
