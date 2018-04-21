@@ -75,8 +75,6 @@ function stringifyData(obj) {
     return data;
 }
 
-alert('here comes iffe')
-
 // // Monkey patch to listen for state changes
 (function connectReactDevTool() {
     // Error if React Developer Tools is not installed
