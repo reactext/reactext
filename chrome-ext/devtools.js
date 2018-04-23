@@ -17,6 +17,8 @@ chrome.devtools.panels.create(
 //This pulls the recousrces that build the page.
 //This gets the url for the bundle.
 
+console.log(chrome.devtools.inspectedWindow.tabId)
+
 chrome.devtools.inspectedWindow.getResources((resources) => {
     console.log(resources, '<=== im the resources');
     let res = resources.filter((e) => {
