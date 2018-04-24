@@ -9,6 +9,12 @@
       "http://*/*",
       "https://*/*"
     ],
+    "background": {
+      "scripts": [
+        "background.js"
+      ],
+      "persistent": true
+    },
     "icons": {
       "32": "assets/icon.png"
     }
