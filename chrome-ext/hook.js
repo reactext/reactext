@@ -9,6 +9,9 @@ stateSet.forEach((e) => {
     firstStatePull = e;
 });
 
+let changes;
+let currState;
+
 ////////////////
 ///functions////
 ////////////////
@@ -139,3 +142,15 @@ console.log('pageSetup: ', pageSetup);
         };
     })(devTools.onCommitFiberRoot);
 }());
+
+//for React 16+
+async function getStateChanges(instance) {
+    console.log("getStateChanges is running", instance)
+    try {
+        changes = await instance;
+        currState = await checkReactDOM(changes);
+        console.log('currState in getStateChanges', currState)
+    } catch (e) {
+        console.log(e);
+    }
+}
