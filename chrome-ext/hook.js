@@ -78,6 +78,24 @@ let traverseAndGatherReactDOM =  (node, cache) => {
 
     cache.push(component);
 }
+/////////////////////////////////////////////////
+
+let organizeState = (state) => {
+    //passing in the children array
+    // console.log(state, 'state');
+    if(state.length >= 1){
+        state.forEach((child) => {
+            // console.log(child, '<--- child');
+            componentName = child.name;
+            pageSetup[child.name] = child.state;
+            if(child.children.length >= 1){
+                // console.log('child hit !')
+                organizeState(child.children);
+            }
+        });
+    }
+}
+
 
 
 
