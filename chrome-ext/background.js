@@ -19,3 +19,12 @@ function notifyDevtools(msg) {
         port.postMessage(msg);
     });
 }
+
+chrome.runtime.onMessage.addListener(function (msg, sender) {
+    // First, validate the message's structure
+    if (msg.from === 'content_script') {
+      // Enable the page-action for the requesting tab
+      console.log('in listener background.js.....', msg.data)
+    }
+  });
+
