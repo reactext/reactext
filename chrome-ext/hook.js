@@ -127,7 +127,3 @@ console.log('hook.js');
 // console.log(rid, 'rid');
 // console.log('nestedState: ',nestedState);
 console.log('pageSetup: ', pageSetup);
-
-
-
-
