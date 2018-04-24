@@ -10,7 +10,7 @@ stateSet.forEach((e) => {
 ////////////////
 ///functions////
 ////////////////
-let checkReactDOM =  (reactDOM) => {
+const checkReactDOM =  (reactDOM) => {
     //current state will be an array of all the caches.
     let data = {currentState: null}
     let cache = [];
@@ -27,7 +27,7 @@ let checkReactDOM =  (reactDOM) => {
 }
 
 ///////////////////////////////////////
-let traverseAndGatherReactDOM =  (node, cache) => {
+const traverseAndGatherReactDOM =  (node, cache) => {
 
     let component = {
         id:null,
@@ -80,7 +80,7 @@ let traverseAndGatherReactDOM =  (node, cache) => {
 }
 /////////////////////////////////////////////////
 
-let organizeState = (state) => {
+const organizeState = (state) => {
     //passing in the children array
     // console.log(state, 'state');
     if(state.length >= 1){
@@ -98,7 +98,7 @@ let organizeState = (state) => {
 
 /////////////////////////////////////////////////
 
-let transmitData = (state) => {
+const transmitData = (state) => {
     // console.log('cache', state);
     // console.log('transmit', state);
     // create a custom event to dispatch for actions for requesting data from background
@@ -114,11 +114,7 @@ let transmitData = (state) => {
 
 let nestedState = checkReactDOM(firstStatePull.current.stateNode);
 organizeState(nestedState.currentState[0].children);
-//need to send pageSetup out...
-                        ///string extensionId, any message, object options, function responseCallback
-// chrome.runtime.sendMessage('null',{exampleMessage:'im the message from hook.js'});
 
-//next attempt
 console.log('bout to transmit...')
 transmitData(pageSetup);
 
