@@ -138,13 +138,14 @@ transmitData(pageSetup);
     })(devTools.onCommitFiberRoot);
 }());
 
-//for React 16+
+//getStatChanges takes in an instance and 
 async function getStateChanges(instance) {
+    console.log(instance, '<---instance')
     try {
         changes = await instance;
         currNestedState = await checkReactDOM(changes);
         organizeState(currNestedState.currentState[0].children);
-        console.log('currState in getStateChanges', pageSetup)
+        transitData(pageSetup);
     } catch (e) {
         console.log(e);
     }
