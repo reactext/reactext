@@ -8,3 +8,5 @@ function injectScript(file, body) {
   script.setAttribute('src', file);
   windowBody.appendChild(script);
 }
+
+injectScript(chrome.runtime.getURL('/hook.js'), 'body');
