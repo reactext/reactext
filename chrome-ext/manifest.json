@@ -8,5 +8,8 @@
       "tabs",
       "http://*/*",
       "https://*/*"
-    ]
+    ],
+    "icons": {
+      "32": "assets/icon.png"
+    }
 }
