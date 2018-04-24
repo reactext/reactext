@@ -1,5 +1,8 @@
 let ports = [];
+
+//this is an array of objects that hold the tab's new state 
 let state = [];
+
 //This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(function(port) {
     console.log(port, '<-- im the port');
@@ -15,10 +18,9 @@ chrome.runtime.onConnect.addListener(function(port) {
         // Received message from devtools. Do something:
         console.log('Received message from devtools page', msg);
     });
-    console.log('message!!!!', message);
+    console.log('NEW STATEEEEE!!!!', state[state.length-1]);
     notifyDevtools(JSON.stringify(state[state.length-1]));
 });
-
 
 // Function to send a message to all devtools.html views:
 function notifyDevtools(msg) {
@@ -27,16 +29,13 @@ function notifyDevtools(msg) {
     });
 }
 
-
+//the following API receives a message from the content script 
+//a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's state changes
 chrome.runtime.onMessage.addListener(function (msg, sender) {
-    // First, validate the message's structure
+    // validate we are listening for the correct msg
     if (msg.from === 'content_script') {
-      // Enable the page-action for the requesting tab
       message = msg.data;
+      //message object from content_script is pushed to state array
       state.push(message);
-      console.log(state, 'state ---->')
     }
   });
-
-  console.log(state, 'state ---->')
-
