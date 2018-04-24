@@ -96,6 +96,37 @@ let organizeState = (state) => {
     }
 }
 
+/////////////////////////////////////////////////
+
+let transmitData = (state) => {
+    // console.log('cache', state);
+    // console.log('transmit', state);
+    // create a custom event to dispatch for actions for requesting data from background
+    const customEvent = new CustomEvent('ReacText', { detail: { data: state } });
+    window.dispatchEvent(customEvent);
+}
+
+/////////////////////////////////////////////////
+
+/////////////////
+///Main Logic////
+/////////////////
+
+let nestedState = checkReactDOM(firstStatePull.current.stateNode);
+organizeState(nestedState.currentState[0].children);
+//need to send pageSetup out...
+                        ///string extensionId, any message, object options, function responseCallback
+// chrome.runtime.sendMessage('null',{exampleMessage:'im the message from hook.js'});
+
+//next attempt
+console.log('bout to transmit...')
+transmitData('im the example data');
+
+/////console logs to make sure stuff is working properly/////
+console.log('hook.js');
+// console.log(rid, 'rid');
+// console.log('nestedState: ',nestedState);
+console.log('pageSetup: ', pageSetup);
 
 
 
