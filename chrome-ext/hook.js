@@ -102,7 +102,7 @@ let transmitData = (state) => {
     // console.log('cache', state);
     // console.log('transmit', state);
     // create a custom event to dispatch for actions for requesting data from background
-    const customEvent = new CustomEvent('ReacText', { detail: { data: state } });
+    const customEvent = new CustomEvent('ReacText', { detail: { data: JSON.stringify(state) } });
     window.dispatchEvent(customEvent);
 }
 
@@ -120,7 +120,7 @@ organizeState(nestedState.currentState[0].children);
 
 //next attempt
 console.log('bout to transmit...')
-transmitData('im the example data');
+transmitData(pageSetup);
 
 /////console logs to make sure stuff is working properly/////
 console.log('hook.js');
