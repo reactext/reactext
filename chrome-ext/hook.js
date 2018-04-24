@@ -145,7 +145,7 @@ async function getStateChanges(instance) {
         changes = await instance;
         currNestedState = await checkReactDOM(changes);
         organizeState(currNestedState.currentState[0].children);
-        transitData(pageSetup);
+        transmitData(pageSetup);
     } catch (e) {
         console.log(e);
     }

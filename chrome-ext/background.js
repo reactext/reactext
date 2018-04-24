@@ -1,5 +1,5 @@
 let ports = [];
-let message;
+let state = [];
 //This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(function(port) {
     console.log(port, '<-- im the port');
@@ -16,7 +16,7 @@ chrome.runtime.onConnect.addListener(function(port) {
         console.log('Received message from devtools page', msg);
     });
     console.log('message!!!!', message);
-    notifyDevtools(message);
+    notifyDevtools(JSON.stringify(state[state.length-1]));
 });
 
 
@@ -32,8 +32,11 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
     // First, validate the message's structure
     if (msg.from === 'content_script') {
       // Enable the page-action for the requesting tab
-      console.log('in listener background.js.....', msg.data)
-      message =JSON.stringify(msg.data);
+      message = msg.data;
+      state.push(message);
+      console.log(state, 'state ---->')
     }
   });
+
+  console.log(state, 'state ---->')
 
