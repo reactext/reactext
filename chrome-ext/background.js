@@ -1,5 +1,9 @@
-var ports = [];
+let ports = [];
+let message;
+//This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(function(port) {
+    console.log(port, '<-- im the port');
+    console.log(ports, '<-- im the ports');
     if (port.name !== "devtools") return;
     ports.push(port);
     // Remove port when devtools is closed
@@ -11,8 +15,11 @@ chrome.runtime.onConnect.addListener(function(port) {
         // Received message from devtools. Do something:
         console.log('Received message from devtools page', msg);
     });
-    notifyDevtools('this is our data');
+    console.log('message!!!!', message);
+    notifyDevtools(message);
 });
+
+
 // Function to send a message to all devtools.html views:
 function notifyDevtools(msg) {
     ports.forEach(function(port) {
@@ -20,11 +27,13 @@ function notifyDevtools(msg) {
     });
 }
 
+
 chrome.runtime.onMessage.addListener(function (msg, sender) {
     // First, validate the message's structure
     if (msg.from === 'content_script') {
       // Enable the page-action for the requesting tab
       console.log('in listener background.js.....', msg.data)
+      message =JSON.stringify(msg.data);
     }
   });
 
