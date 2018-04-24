@@ -5,12 +5,12 @@ const stateSet = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._fiberRoots[rid];
 let pageSetup = {};
 let firstStatePull;
 
+let changes;
+let currNestedState;
+
 stateSet.forEach((e) => {
     firstStatePull = e;
 });
-
-let changes;
-let currState;
 
 ////////////////
 ///functions////
@@ -118,6 +118,7 @@ const transmitData = (state) => {
 /////////////////
 
 let nestedState = checkReactDOM(firstStatePull.current.stateNode);
+console.log(nestedState, "NSSSS")
 organizeState(nestedState.currentState[0].children);
 
 console.log('bout to transmit...')
@@ -139,11 +140,11 @@ transmitData(pageSetup);
 
 //for React 16+
 async function getStateChanges(instance) {
-    console.log("getStateChanges is running", instance)
     try {
         changes = await instance;
-        currState = await checkReactDOM(changes);
-        console.log('currState in getStateChanges', currState)
+        currNestedState = await checkReactDOM(changes);
+        organizeState(currNestedState.currentState[0].children);
+        console.log('currState in getStateChanges', pageSetup)
     } catch (e) {
         console.log(e);
     }
