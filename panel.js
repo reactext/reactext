@@ -1,24 +1,8 @@
-// const cheerio = require('cheerio');
-const request = require('request');
-
-console.log('panel.js here !!!');
-
-
-
-
-
-console.log(chrome.devtools.inspectedWindow.getResources((resources) => {
-    let res = resources.filter((el) => {
-        return el.url.includes('/bundle.js');
-    })
-    
-    console.log(res.url)
-    request(res.url, (error, response, html) => {
-        // let $ = cheerio.load(html);
-        console.log(html);
-        // res.setHeader('Content-Type', 'application/json');
-    
-        // res.json($.html()); 
-        // next();
-      });
-}));
+function do_something(msg) {
+    document.body.textContent += '\n' + msg; // 
+}
+document.documentElement.onclick = function() {
+    // No need to check for the existence of `respond`, because
+    // the panel can only be clicked when it's visible...
+    respond('response from panel upon clicking :)');
+};
