@@ -123,12 +123,6 @@ organizeState(nestedState.currentState[0].children);
 console.log('bout to transmit...')
 transmitData(pageSetup);
 
-/////console logs to make sure stuff is working properly/////
-console.log('hook.js');
-// console.log(rid, 'rid');
-// console.log('nestedState: ',nestedState);
-console.log('pageSetup: ', pageSetup);
-
 /////////////////
 ///Changes to State////
 /////////////////
