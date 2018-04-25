@@ -18,13 +18,6 @@ function do_something(msg) {
                 listItem.innerText = `${e} : ${stateObj[e]}`;
                 list.appendChild(listItem);
             });
-
-
-
-
-
-            // state.innerText= msg.data[node];
-
             let container = document.querySelector('#container')
             console.log(container, 'container');
             div.appendChild(list);
