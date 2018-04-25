@@ -10,7 +10,7 @@ function injectScript(file, body) {
 
 injectScript(chrome.runtime.getURL('/hook.js'), 'body');
 
-//ADD an eventListener that listens for Reactext event from hook.js and has a callback that sends a message to
+//ADD an eventListener that listens for Reactext event from hook.js and has a callback that sends a message to background.js
 window.addEventListener("ReacText", (message) => {
   //message coming in well here.
   console.log('in contentScript, message!!!!!!!!:', message);

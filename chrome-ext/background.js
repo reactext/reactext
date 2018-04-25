@@ -38,7 +38,7 @@ chrome.runtime.onConnect.addListener( port => {
     })
 
     console.log('NEW STATEEEEE!!!!', state[state.length - 1]);
-    notifyDevtools(port, JSON.stringify(state[state.length - 1]));
+    notifyDevtools(port, state[state.length - 1]);
 });
 
 // Function to send a message to all devtools.html views:

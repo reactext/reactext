@@ -108,19 +108,18 @@ const organizeState = (state) => {
 ///////////////temp/////////////////////
 function stringifyData(obj) {
     let box = [];
-    console.log(obj, 'objectttttt uauuuuudugheg')
     let data = JSON.parse(
         JSON.stringify(obj, (key, value) => {
-            console.log('im the value',value);
-            console.log('im the key',key);
-            console.log('im the typeof',typeof value);
+            // console.log('im the value',value);
+            // console.log('im the key',key);
+            // console.log('im the typeof',typeof value);
             if (typeof value === 'object' || typeof value === 'function'){
                 if(value !== null){
-                    console.log('im the value after the if.....', value);
+                    // console.log('im the value after the if.....', value);
                     if (box.indexOf(value) !== -1) {
                         return;
                     }
-                    console.log('im getting pushed into box***', value);
+                    // console.log('im getting pushed into box***', value);
                     box.push(value);
                 }
             }
