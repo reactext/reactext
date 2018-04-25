@@ -1,10 +1,10 @@
 let connections = {};
 
-//this is an array of objects that hold the tab's new state 
+//this is an array of objects that hold the tab's new state
 let state = [];
 
 //This listens for a chrom.runtime.onConnect to be fired
-chrome.runtime.onConnect.addListener(function (port) {
+chrome.runtime.onConnect.addListener( port => {
     console.log(port, '<-- im the port');
     console.log(connections, '<-- im the connections');
 
@@ -48,7 +48,7 @@ function notifyDevtools(port, msg) {
     port.postMessage(msg);
 }
 
-//the following API receives a message from the content script 
+//the following API receives a message from the content script
 //a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's state changes
 chrome.runtime.onMessage.addListener(function (msg, sender, res) {
     console.log(res, '<reponse ------->')
