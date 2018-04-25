@@ -1,8 +1,13 @@
 //start of vars and main logic
+const devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const rid = Object.keys(window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers)[0];
 const stateSet = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._fiberRoots[rid];
 let pageSetup = {};
 let firstStatePull;
+
+let changes;
+let currNestedState;
+
 stateSet.forEach((e) => {
     firstStatePull = e;
 });
@@ -10,14 +15,14 @@ stateSet.forEach((e) => {
 ////////////////
 ///functions////
 ////////////////
-const checkReactDOM =  (reactDOM) => {
+const checkReactDOM = (reactDOM) => {
     //current state will be an array of all the caches.
-    let data = {currentState: null}
+    let data = { currentState: null }
     let cache = [];
 
-    if(reactDOM){
+    if (reactDOM) {
         traverseAndGatherReactDOM(reactDOM.current, cache);
-    }else{
+    } else {
         return;
     }
 
@@ -27,15 +32,15 @@ const checkReactDOM =  (reactDOM) => {
 }
 
 ///////////////////////////////////////
-const traverseAndGatherReactDOM =  (node, cache) => {
+const traverseAndGatherReactDOM = (node, cache) => {
 
     let component = {
-        id:null,
-        name:'',
-        state:null,
-        props:null,
-        children:[],
-        store:null,
+        id: null,
+        name: '',
+        state: null,
+        props: null,
+        children: [],
+        store: null,
     };
 
     if (node._debugID) {
@@ -83,12 +88,12 @@ const traverseAndGatherReactDOM =  (node, cache) => {
 const organizeState = (state) => {
     //passing in the children array
     // console.log(state, 'state');
-    if(state.length >= 1){
+    if (state.length >= 1) {
         state.forEach((child) => {
             // console.log(child, '<--- child');
             componentName = child.name;
             pageSetup[child.name] = child.state;
-            if(child.children.length >= 1){
+            if (child.children.length >= 1) {
                 // console.log('child hit !')
                 organizeState(child.children);
             }
@@ -133,13 +138,35 @@ const transmitData = (state) => {
 /////////////////
 
 let nestedState = checkReactDOM(firstStatePull.current.stateNode);
+console.log(nestedState, "NSSSS")
 organizeState(nestedState.currentState[0].children);
 
 console.log('bout to transmit...')
 transmitData(pageSetup);
 
-/////console logs to make sure stuff is working properly/////
-console.log('hook.js');
-// console.log(rid, 'rid');
-// console.log('nestedState: ',nestedState);
-console.log('pageSetup: ', pageSetup);
+/////////////////
+///Changes to State////
+/////////////////
+
+// Monkey patch into devTools object in React devTools
+(function connectReactDevTool() {
+    devTools.onCommitFiberRoot = ((original) => {
+        return (...args) => {
+            getStateChanges(args[1]);
+            return original(...args);
+        };
+    })(devTools.onCommitFiberRoot);
+}());
+
+//getStatChanges takes in an instance and 
+async function getStateChanges(instance) {
+    console.log(instance, '<---instance')
+    try {
+        changes = await instance;
+        currNestedState = await checkReactDOM(changes);
+        organizeState(currNestedState.currentState[0].children);
+        transmitData(pageSetup);
+    } catch (e) {
+        console.log(e);
+    }
+}
