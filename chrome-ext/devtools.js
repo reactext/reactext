@@ -6,7 +6,11 @@ function createPanel() {
         function (extensionPanel) {
             let _window; // This will hold the reference to panel.html's `window`
             let data = [];
-            let port = chrome.runtime.connect({ name: 'devtools' });
+            //store tabId as variable
+            let portId = JSON.stringify(chrome.devtools.inspectedWindow.tabId);
+            
+            //connect to background.js with connect method, pass in optional object with name property
+            let port = chrome.runtime.connect({ name: portId });
 
             console.log('im the port object', port);
 

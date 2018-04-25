@@ -8,28 +8,39 @@ chrome.runtime.onConnect.addListener(function (port) {
     console.log(port, '<-- im the port');
     console.log(connections, '<-- im the connections');
 
-    // Remove port when devtools is closed
-    // port.onDisconnect.addListener(function () {
-    //     var i = ports.indexOf(port);
-    //     if (i !== -1) ports.splice(i, 1);
-    // });
-
     //listens for post Message on port (i.e. devtools.js)
-    port.onMessage.addListener(function (msg) {
+    port.onMessage.addListener( msg => {
         // Received message from devtools. Do something:
         console.log('Received message from devtools page', msg);
         console.log('port in addListener line 21', port);
 
         //
-        const extensionListener = msg => {
+        const addActiveTabToConnections = msg => {
             if (msg.name == 'connect' && msg.tabId) {
                 connections[msg.tabId] = port;
                 return;
             }
         }
 
-        extensionListener(msg);
+        addActiveTabToConnections(msg);
     });
+
+    port.onDisconnect.addListener( msg => {
+        console.log('port in disconnect', msg);
+        console.log('port in disconnect msg.name', msg.name)
+
+        // port.onMessage.removeListener(connections[msg[]);
+
+        let portIds = Object.keys(connections);
+        for (let i = 0; i < portIds.length; i++) {
+            if (portIds[i] === msg.name) {
+            // if (connections[portIds[i]] == port) {
+                delete connections[portIds[i]];
+                break;
+            }
+        }
+    })
+
     console.log('NEW STATEEEEE!!!!', state[state.length - 1]);
     notifyDevtools(JSON.stringify(state[state.length - 1]));
 });
