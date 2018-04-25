@@ -36,8 +36,8 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
     if (msg.from === 'content_script') {
       message = msg.data;
       console.log(message, 'this is the message')
-      //where is this message going now.
       //message object from content_script is pushed to state array
       state.push(message);
     }
   });
+ 

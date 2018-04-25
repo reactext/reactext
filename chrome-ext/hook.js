@@ -108,18 +108,30 @@ const organizeState = (state) => {
 ///////////////temp/////////////////////
 function stringifyData(obj) {
     let box = [];
+    console.log('im the objs from inside the stringigy func', typeof obj.Phillip.backgroundChange.toString());
     let data = JSON.parse(
         JSON.stringify(obj, (key, value) => {
-            if (typeof value === 'object' && value !== null) {
-                if (box.indexOf(value) !== -1) {
-                    return;
+            console.log('im the value',value);
+            console.log('im the key',key);
+            console.log('im the typeof',typeof value);
+            if (typeof value === 'object' || typeof value === 'function'){
+                if(value !== null){
+                    console.log('im the value after the if.....', value);
+                    if (box.indexOf(value) !== -1) {
+                        return;
+                    }
+                    console.log('im getting pushed into box***', value);
+                    box.push(value);
                 }
-                box.push(value);
+            }
+            if(typeof value === 'function'){
+                value = value.toString();
             }
             return value;
         })
     );
     box = null;
+    console.log('im the DATA from inside the stringigy func AT THE END', data);
     return data;
 }
 
@@ -128,8 +140,9 @@ const transmitData = (state) => {
     // console.log('cache', state);
     // console.log('transmit', state);
     // create a custom event to dispatch for actions for requesting data from background
+    console.log(state, 'im the state withough the stringifyData method');
     console.log(stringifyData(state), 'im the stringifyData method being used');
-    console.log(state, 'original');
+    console.log(typeof state.Phillip.backgroundChange, 'original');
     const customEvent = new CustomEvent('ReacText', {
         detail: {
             data: stringifyData(state)
@@ -146,12 +159,11 @@ const transmitData = (state) => {
 
 let nestedState = checkReactDOM(firstStatePull.current.stateNode);
 organizeState(nestedState.currentState[0].children);
-
 transmitData(pageSetup);
 
-/////////////////
-///Changes to State////
-/////////////////
+//////////////////////
+///Changes to State///
+//////////////////////
 
 // Monkey patch into devTools object in React devTools
 (function connectReactDevTool() {
