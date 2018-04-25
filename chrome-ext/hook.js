@@ -17,7 +17,9 @@ stateSet.forEach((e) => {
 ////////////////
 const checkReactDOM = (reactDOM) => {
     //current state will be an array of all the caches.
-    let data = { currentState: null }
+    let data = {
+        currentState: null
+    }
     let cache = [];
 
     if (reactDOM) {
@@ -107,27 +109,32 @@ const organizeState = (state) => {
 function stringifyData(obj) {
     let box = [];
     let data = JSON.parse(
-      JSON.stringify(obj, (key, value) => {
-        if (typeof value === 'object' && value !== null) {
-          if (box.indexOf(value) !== -1) {
-            return;
-          }
-          box.push(value);
-        }
-        return value;
-      }));
+        JSON.stringify(obj, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (box.indexOf(value) !== -1) {
+                    return;
+                }
+                box.push(value);
+            }
+            return value;
+        })
+    );
     box = null;
     return data;
-  }
+}
 
 
 const transmitData = (state) => {
     // console.log('cache', state);
     // console.log('transmit', state);
     // create a custom event to dispatch for actions for requesting data from background
+    console.log(stringifyData(state), 'im the stringifyData method being used');
     console.log(state, 'original');
-    console.log(JSON.stringify(state), 'stringified');
-    const customEvent = new CustomEvent('ReacText', { detail: { data: stringifyData(state) } });
+    const customEvent = new CustomEvent('ReacText', {
+        detail: {
+            data: stringifyData(state)
+        }
+    });
     window.dispatchEvent(customEvent);
 }
 
@@ -138,10 +145,8 @@ const transmitData = (state) => {
 /////////////////
 
 let nestedState = checkReactDOM(firstStatePull.current.stateNode);
-console.log(nestedState, "NSSSS")
 organizeState(nestedState.currentState[0].children);
 
-console.log('bout to transmit...')
 transmitData(pageSetup);
 
 /////////////////
@@ -158,7 +163,7 @@ transmitData(pageSetup);
     })(devTools.onCommitFiberRoot);
 }());
 
-//getStatChanges takes in an instance and 
+//getStatChanges takes in an instance and
 async function getStateChanges(instance) {
     console.log(instance, '<---instance')
     try {
