@@ -1,4 +1,4 @@
-let ports = [];
+let connections = {};
 
 //this is an array of objects that hold the tab's new state 
 let state = [];
@@ -6,17 +6,29 @@ let state = [];
 //This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(function (port) {
     console.log(port, '<-- im the port');
-    console.log(ports, '<-- im the ports');
-    if (port.name !== "devtools") return;
-    ports.push(port);
+    console.log(connections, '<-- im the connections');
+
     // Remove port when devtools is closed
-    port.onDisconnect.addListener(function () {
-        var i = ports.indexOf(port);
-        if (i !== -1) ports.splice(i, 1);
-    });
+    // port.onDisconnect.addListener(function () {
+    //     var i = ports.indexOf(port);
+    //     if (i !== -1) ports.splice(i, 1);
+    // });
+
+    //listens for post Message on port (i.e. devtools.js)
     port.onMessage.addListener(function (msg) {
         // Received message from devtools. Do something:
         console.log('Received message from devtools page', msg);
+        console.log('port in addListener line 21', port);
+
+        //
+        const extensionListener = msg => {
+            if (msg.name == 'connect' && msg.tabId) {
+                connections[msg.tabId] = port;
+                return;
+            }
+        }
+
+        extensionListener(msg);
     });
     console.log('NEW STATEEEEE!!!!', state[state.length - 1]);
     notifyDevtools(JSON.stringify(state[state.length - 1]));
