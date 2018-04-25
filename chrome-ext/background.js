@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
     if (msg.from === 'content_script') {
       // Enable the page-action for the requesting tab
       console.log('in listener background.js.....', msg.data)
-      message =JSON.stringify(msg.data);
+      message = msg.data;
     }
   });
 

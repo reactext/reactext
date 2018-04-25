@@ -98,11 +98,31 @@ const organizeState = (state) => {
 
 /////////////////////////////////////////////////
 
+///////////////temp/////////////////////
+function stringifyData(obj) {
+    let box = [];
+    let data = JSON.parse(
+      JSON.stringify(obj, (key, value) => {
+        if (typeof value === 'object' && value !== null) {
+          if (box.indexOf(value) !== -1) {
+            return;
+          }
+          box.push(value);
+        }
+        return value;
+      }));
+    box = null;
+    return data;
+  }
+
+
 const transmitData = (state) => {
     // console.log('cache', state);
     // console.log('transmit', state);
     // create a custom event to dispatch for actions for requesting data from background
-    const customEvent = new CustomEvent('ReacText', { detail: { data: JSON.stringify(state) } });
+    console.log(state, 'original');
+    console.log(JSON.stringify(state), 'stringified');
+    const customEvent = new CustomEvent('ReacText', { detail: { data: stringifyData(state) } });
     window.dispatchEvent(customEvent);
 }
 
