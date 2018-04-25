@@ -108,7 +108,7 @@ const organizeState = (state) => {
 ///////////////temp/////////////////////
 function stringifyData(obj) {
     let box = [];
-    console.log('im the objs from inside the stringigy func', typeof obj.Phillip.backgroundChange.toString());
+    console.log(obj, 'objectttttt uauuuuudugheg')
     let data = JSON.parse(
         JSON.stringify(obj, (key, value) => {
             console.log('im the value',value);
@@ -142,7 +142,6 @@ const transmitData = (state) => {
     // create a custom event to dispatch for actions for requesting data from background
     console.log(state, 'im the state withough the stringifyData method');
     console.log(stringifyData(state), 'im the stringifyData method being used');
-    console.log(typeof state.Phillip.backgroundChange, 'original');
     const customEvent = new CustomEvent('ReacText', {
         detail: {
             data: stringifyData(state)
