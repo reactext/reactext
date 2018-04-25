@@ -14,7 +14,7 @@ chrome.runtime.onConnect.addListener(function (port) {
         console.log('Received message from devtools page', msg);
         console.log('port in addListener line 21', port);
 
-        //
+        //when a devTool is opened, this function adds a tab info to the conections object
         const addActiveTabToConnections = msg => {
             if (msg.name == 'connect' && msg.tabId) {
                 connections[msg.tabId] = port;
@@ -26,11 +26,7 @@ chrome.runtime.onConnect.addListener(function (port) {
     });
 
     port.onDisconnect.addListener( msg => {
-        console.log('port in disconnect', msg);
-        console.log('port in disconnect msg.name', msg.name)
-
-        // port.onMessage.removeListener(connections[msg[]);
-
+        //loop through connections object and find delete disconnected tab
         let portIds = Object.keys(connections);
         for (let i = 0; i < portIds.length; i++) {
             if (portIds[i] === msg.name) {
@@ -42,14 +38,14 @@ chrome.runtime.onConnect.addListener(function (port) {
     })
 
     console.log('NEW STATEEEEE!!!!', state[state.length - 1]);
-    notifyDevtools(JSON.stringify(state[state.length - 1]));
+    notifyDevtools(port, JSON.stringify(state[state.length - 1]));
 });
 
 // Function to send a message to all devtools.html views:
-function notifyDevtools(msg) {
-    ports.forEach(function (port) {
-        port.postMessage(msg);
-    });
+function notifyDevtools(port, msg) {
+    console.log('msg inside of notifyDevTools line 46', port)
+    console.log('msg inside of notifyDevTools line 47', msg)
+    port.postMessage(msg);
 }
 
 //the following API receives a message from the content script 
