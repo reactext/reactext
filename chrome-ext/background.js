@@ -80,15 +80,17 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                 let currKeys = Object.keys(curr.data);
 
                 for (let i = 0; i < prevKeys.length; i++) {
-                    let prevStateProps = prev.data[prevKeys[i]]; // prevKeys = [App, Prov, Dog]
+                    let prevStateProps = prev.data[prevKeys[i]]; 
                     let currStateProps = curr.data[prevKeys[i]];
 
                     if (prevStateProps !== currStateProps) {
                         let stateKeys = Object.keys(prevStateProps)
                         for (let j = 0; j < stateKeys.length; j++) {
                             if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
+                                console.log(stateKeys, '<------- stateKeys')
+                                console.log(stateKeys[j], '<-------------JJJJJJ')
                                 let changedComp = prevKeys[i];
-                                objOfChanges[changedComp] = { prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
+                                objOfChanges[changedComp] = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
                             }
                         }
                     }

@@ -32,31 +32,16 @@ function do_somethingElse(msg) {
         if (curr !== "stateHasChanged") {
             let div2 = document.createElement('div');
             div2.innerHTML = `<h2>${curr}</h2>`;
+            div2.style.color = "green";
             let state = document.createElement('div');
             console.log(msg[curr], '<------------CURRRR');
             let obj = msg[curr];
-            state.innerHTML =  `Blah was ${obj.prev} and is now ${obj.curr}`;
+            state.innerHTML =  `${obj.propName} was ${obj.prev} and is now ---> ${obj.curr}`;
             div2.appendChild(state);
             let container = document.querySelector('#container')
-            document.querySelector('#container').appendChild(div2)
-
-            // let list = document.createElement('ul');
-
-            // Object.keys(msg[curr]).forEach(e => {
-            //     console.log("EEEEEEEEEEEE", msg[curr][e])
-            //     let listItem = document.createElement('li');
-            //     listItem.innerText = `${e} : ${msg[curr][e]}`;
-            //     list.appendChild(listItem);
-            // });
-            // let container = document.querySelector('#container')
-            // console.log(container, 'container');
-            // div.appendChild(list);
-            // document.querySelector('#container').appendChild(div)
+            document.querySelector('#container').appendChild(div2);
         }
-        console.log("Values in obj in devtools", curr + " associated value " + JSON.stringify(msg[curr]))
     })
-    console.log("Hi, how's it going form panel.js do something else")
-
 }
 
 document.documentElement.onclick = function () {
