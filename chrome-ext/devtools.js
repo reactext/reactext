@@ -42,6 +42,8 @@ function createPanel() {
                 // }
                 if (_window && msg.stateHasChanged) {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
+ 
+                    _window.do_somethingElse(msg)
                 }
                 else {
                     data.push(msg);
