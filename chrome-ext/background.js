@@ -4,12 +4,12 @@ let connections = {};
 let state = [];
 
 //This listens for a chrom.runtime.onConnect to be fired
-chrome.runtime.onConnect.addListener( port => {
+chrome.runtime.onConnect.addListener(port => {
     console.log(port, '<-- im the port');
     console.log(connections, '<-- im the connections');
 
     //listens for post Message on port (i.e. devtools.js)
-    port.onMessage.addListener( msg => {
+    port.onMessage.addListener(msg => {
         // Received message from devtools. Do something:
         console.log('Received message from devtools page', msg);
         console.log('port in addListener line 21', port);
@@ -25,12 +25,12 @@ chrome.runtime.onConnect.addListener( port => {
         addActiveTabToConnections(msg);
     });
 
-    port.onDisconnect.addListener( msg => {
+    port.onDisconnect.addListener(msg => {
         //loop through connections object and find delete disconnected tab
         let portIds = Object.keys(connections);
         for (let i = 0; i < portIds.length; i++) {
             if (portIds[i] === msg.name) {
-            // if (connections[portIds[i]] == port) {
+                // if (connections[portIds[i]] == port) {
                 delete connections[portIds[i]];
                 break;
             }
@@ -55,7 +55,43 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
     // validate we are listening for the correct msg
     if (msg.from === 'content_script') {
         message = msg.data;
-        //message object from content_script is pushed to state array
+        //compare state changes
+        if (state.length > 0) {
+            let prev = state[state.length - 1];
+            let curr = message;
+
+
+            const findChanges = (prev, curr) => {
+                console.log('findChanges has been fired');
+
+                let objOfChanges = {};
+
+                let prevKeys = Object.keys(prev.data);
+                let currKeys = Object.keys(curr.data);
+
+                for (let i = 0; i < prevKeys.length; i++) {
+                    let prevStateProps = prev.data[prevKeys[i]]; // prevKeys = [App, Prov, Dog]
+                    let currStateProps = curr.data[prevKeys[i]];
+
+                    if (prevStateProps !== currStateProps) {
+                        let stateKeys = Object.keys(prevStateProps)
+                        for (let j = 0; j < stateKeys.length; j++) {
+                            if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
+                               let name = prevKeys[i];
+                               console.log(name, '<------name in second for loops!')
+                               objOfChanges[name] = [prevStateProps[stateKeys[j]], currStateProps[stateKeys[j]]]
+                            }
+                        }
+                    }
+                }
+                console.log(objOfChanges, 'obj of Changes')
+                return objOfChanges;
+            }
+
+            let changesToState = findChanges(prev, curr)
+        };
+
+        //message object from content_script is stored to state array
         state.push(message);
         console.log(state, '<----this state array is growing')
     }
