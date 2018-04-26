@@ -2,6 +2,7 @@ let connections = {};
 
 //this is an array of objects that hold the tab's new state
 let state = [];
+let changesToState;
 
 //This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(port => {
@@ -35,10 +36,12 @@ chrome.runtime.onConnect.addListener(port => {
                 break;
             }
         }
-    })
+    });
 
     console.log('NEW STATEEEEE!!!!', state[state.length - 1]);
     notifyDevtools(port, state[state.length - 1]);
+
+
 });
 
 // Function to send a message to all devtools.html views:
@@ -48,10 +51,17 @@ function notifyDevtools(port, msg) {
     port.postMessage(msg);
 }
 
+function sendStateChanges(port, msg) {
+    console.log('msg sendStateChanges', port)
+    console.log('msg sendStateChanges', msg)
+    port.postMessage(msg);
+}
+
 //the following API receives a message from the content script
 //a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's state changes
 chrome.runtime.onMessage.addListener(function (msg, sender, res) {
-    console.log(res, '<reponse ------->')
+    console.log(sender, 'SENDDDDDDDDDDDDERRRRRRRRR')
+    let tabId = sender.tab.id;
     // validate we are listening for the correct msg
     if (msg.from === 'content_script') {
         message = msg.data;
@@ -64,7 +74,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
             const findChanges = (prev, curr) => {
                 console.log('findChanges has been fired');
 
-                let objOfChanges = {};
+                let objOfChanges = { stateHasChanged: true };
 
                 let prevKeys = Object.keys(prev.data);
                 let currKeys = Object.keys(curr.data);
@@ -77,22 +87,21 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                         let stateKeys = Object.keys(prevStateProps)
                         for (let j = 0; j < stateKeys.length; j++) {
                             if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
-                               let name = prevKeys[i];
-                               console.log(name, '<------name in second for loops!')
-                               objOfChanges[name] = [prevStateProps[stateKeys[j]], currStateProps[stateKeys[j]]]
+                                let changedComp = prevKeys[i];
+                                objOfChanges[changedComp] = { prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
                             }
                         }
                     }
                 }
-                console.log(objOfChanges, 'obj of Changes')
                 return objOfChanges;
             }
-
-            let changesToState = findChanges(prev, curr)
+            changesToState = findChanges(prev, curr)
         };
-
         //message object from content_script is stored to state array
         state.push(message);
         console.log(state, '<----this state array is growing')
+        console.log(changesToState, '<--------------------------this is changing')
     }
+    console.log('beffore sendStateChanges', connections[tabId], '---------->', changesToState)
+    sendStateChanges(connections[tabId], changesToState);
 });

@@ -8,7 +8,7 @@ function createPanel() {
             let data = [];
             //store tabId as variable
             let portId = JSON.stringify(chrome.devtools.inspectedWindow.tabId);
-            
+
             //connect to background.js with connect method, pass in optional object with name property
             let port = chrome.runtime.connect({ name: portId });
 
@@ -21,12 +21,14 @@ function createPanel() {
 
                 // Release queued data
                 let msg;
-                while (msg = data.shift())
+                while (msg = data.shift()) {
+                    console.log('mssssg in devtoool line 25', msg)
                     _window.do_something(msg);
-                // Respond to to background
-                _window.respond = function (msg) {
-                    port.postMessage(msg);
-                };
+                    // Respond to background
+                    _window.respond = function (msg) {
+                        port.postMessage(msg);
+                    };
+                }
             });
 
             port.onMessage.addListener(msg => {
@@ -34,9 +36,14 @@ function createPanel() {
                 // If panel does not exist (yet), the data will be queued.
                 console.log('message from the devtools', msg);
                 console.log(_window, 'im the _window');
-                if (_window) {
-                    _window.do_something(msg);
-                } else {
+                // if (_window && msg.data) {
+                //     console.log('went inside line 40')
+                //     _window.do_something(msg);
+                // }
+                if (_window && msg.stateHasChanged) {
+                    console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
+                }
+                else {
                     data.push(msg);
                 }
             });
