@@ -1,43 +1,109 @@
-let ports = [];
+let connections = {};
 
 //this is an array of objects that hold the tab's new state
 let state = [];
+let changesToState;
 
-//This listens for a chrom.runtime.connect to be fired
-chrome.runtime.onConnect.addListener(function(port) {
+//This listens for a chrom.runtime.onConnect to be fired
+chrome.runtime.onConnect.addListener(port => {
     console.log(port, '<-- im the port');
-    console.log(ports, '<-- im the ports');
-    if (port.name !== "devtools") return;
-    ports.push(port);
-    // Remove port when devtools is closed
-    port.onDisconnect.addListener(function() {
-        var i = ports.indexOf(port);
-        if (i !== -1) ports.splice(i, 1);
-    });
-    port.onMessage.addListener(function(msg) {
+    console.log(connections, '<-- im the connections');
+
+    //listens for post Message on port (i.e. devtools.js)
+    port.onMessage.addListener(msg => {
         // Received message from devtools. Do something:
         console.log('Received message from devtools page', msg);
+        console.log('port in addListener line 21', port);
+
+        //when a devTool is opened, this function adds a tab info to the conections object
+        const addActiveTabToConnections = msg => {
+            if (msg.name == 'connect' && msg.tabId) {
+                connections[msg.tabId] = port;
+                return;
+            }
+        }
+
+        addActiveTabToConnections(msg);
     });
-    console.log('NEW STATEEEEE!!!!', state[state.length-1].data);
-    notifyDevtools(state[state.length-1]);
+
+    port.onDisconnect.addListener(msg => {
+        //loop through connections object and find delete disconnected tab
+        let portIds = Object.keys(connections);
+        for (let i = 0; i < portIds.length; i++) {
+            if (portIds[i] === msg.name) {
+                // if (connections[portIds[i]] == port) {
+                delete connections[portIds[i]];
+                break;
+            }
+        }
+    });
+
+    console.log('NEW STATEEEEE!!!!', state[state.length - 1]);
+    notifyDevtools(port, state[state.length - 1]);
+
+
 });
 
 // Function to send a message to all devtools.html views:
-function notifyDevtools(msg) {
-    ports.forEach(function(port) {
-        port.postMessage(msg);
-    });
+function notifyDevtools(port, msg) {
+    console.log('msg inside of notifyDevTools line 46', port)
+    console.log('msg inside of notifyDevTools line 47', msg)
+    port.postMessage(msg);
+}
+
+function sendStateChanges(port, msg) {
+    console.log('msg sendStateChanges', port)
+    console.log('msg sendStateChanges', msg)
+    port.postMessage(msg);
 }
 
 //the following API receives a message from the content script
 //a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's state changes
-chrome.runtime.onMessage.addListener(function (msg, sender) {
+chrome.runtime.onMessage.addListener(function (msg, sender, res) {
+    console.log(sender, 'SENDDDDDDDDDDDDERRRRRRRRR')
+    let tabId = sender.tab.id;
     // validate we are listening for the correct msg
     if (msg.from === 'content_script') {
-      message = msg.data;
-      console.log(message, 'this is the message')
-      //message object from content_script is pushed to state array
-      state.push(message);
+        message = msg.data;
+        //compare state changes
+        if (state.length > 0) {
+            let prev = state[state.length - 1];
+            let curr = message;
+
+
+            const findChanges = (prev, curr) => {
+                console.log('findChanges has been fired');
+
+                let objOfChanges = { stateHasChanged: true };
+
+                let prevKeys = Object.keys(prev.data);
+                let currKeys = Object.keys(curr.data);
+
+                for (let i = 0; i < prevKeys.length; i++) {
+                    let prevStateProps = prev.data[prevKeys[i]]; 
+                    let currStateProps = curr.data[prevKeys[i]];
+
+                    if (prevStateProps !== currStateProps) {
+                        let stateKeys = Object.keys(prevStateProps)
+                        for (let j = 0; j < stateKeys.length; j++) {
+                            if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
+                                console.log(stateKeys, '<------- stateKeys')
+                                console.log(stateKeys[j], '<-------------JJJJJJ')
+                                let changedComp = prevKeys[i];
+                                objOfChanges[changedComp] = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
+                            }
+                        }
+                    }
+                }
+                return objOfChanges;
+            }
+            changesToState = findChanges(prev, curr)
+        };
+        //message object from content_script is stored to state array
+        state.push(message);
+        console.log(state, '<----this state array is growing')
+        console.log(changesToState, '<--------------------------this is changing')
     }
-  });
- 
+    console.log('beffore sendStateChanges', connections[tabId], '---------->', changesToState)
+    sendStateChanges(connections[tabId], changesToState);
+});

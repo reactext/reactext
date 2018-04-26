@@ -26,6 +26,23 @@ function do_something(msg) {
     });
 }
 
+function do_somethingElse(msg) {
+    let keys = Object.keys(msg)
+    keys.forEach((curr, ind) => {
+        if (curr !== "stateHasChanged") {
+            let div2 = document.createElement('div');
+            div2.innerHTML = `<h2>${curr}</h2>`;
+            div2.style.color = "green";
+            let state = document.createElement('div');
+            console.log(msg[curr], '<------------CURRRR');
+            let obj = msg[curr];
+            state.innerHTML =  `${obj.propName} was ${obj.prev} and is now ---> ${obj.curr}`;
+            div2.appendChild(state);
+            let container = document.querySelector('#container')
+            document.querySelector('#container').appendChild(div2);
+        }
+    })
+}
 
 document.documentElement.onclick = function () {
     // No need to check for the existence of `respond`, because
