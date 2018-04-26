@@ -72,23 +72,22 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
 
 
             const findChanges = (prev, curr) => {
-                console.log('findChanges has been fired');
 
                 let objOfChanges = { stateHasChanged: true };
 
-                let prevKeys = Object.keys(prev.data);
-                let currKeys = Object.keys(curr.data);
+                let prevKeys = Object.keys(prev.data);// prev.data is parent obj. prevKeys is component names
+                let currKeys = Object.keys(curr.data); // same as prev.data but for current state
 
                 for (let i = 0; i < prevKeys.length; i++) {
-                    let prevStateProps = prev.data[prevKeys[i]]; 
-                    let currStateProps = curr.data[prevKeys[i]];
+                    let prevStateProps = prev.data[prevKeys[i]].state; // prevStateProps is the state object for the component.
+                    let currStateProps = curr.data[prevKeys[i]].state; // same as prevStateProps but for current state.
 
-                    if (prevStateProps !== currStateProps) {
+                    console.log(prevStateProps, 'LOOK AT ME FIRST !!!!');
+                    if (prevStateProps !== currStateProps) { // This is filtering out the nulls.
+                        console.log(prevStateProps, 'LOOK AT ME !!!!');
                         let stateKeys = Object.keys(prevStateProps)
                         for (let j = 0; j < stateKeys.length; j++) {
                             if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
-                                console.log(stateKeys, '<------- stateKeys')
-                                console.log(stateKeys[j], '<-------------JJJJJJ')
                                 let changedComp = prevKeys[i];
                                 objOfChanges[changedComp] = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
                             }

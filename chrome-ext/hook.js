@@ -11,7 +11,7 @@ let currNestedState;
 stateSet.forEach((e) => {
     firstStatePull = e;
 });
-
+console.log('ORIGINAL DATA TO WORK WITH ', firstStatePull);
 ////////////////
 ///functions////
 ////////////////
@@ -35,7 +35,7 @@ const checkReactDOM = (reactDOM) => {
 
 ///////////////////////////////////////
 const traverseAndGatherReactDOM = (node, cache) => {
-
+    // console.log('IM THE NODE!!!!',node);
     let component = {
         id: null,
         name: '',
@@ -89,16 +89,40 @@ const traverseAndGatherReactDOM = (node, cache) => {
 
 const organizeState = (state) => {
     //passing in the children array
-    // console.log(state, 'state');
+
     if (state.length >= 1) {
         state.forEach((child) => {
-            // console.log(child, '<--- child');
-            componentName = child.name;
-            pageSetup[child.name] = child.state;
+            console.log(child, '<--- child');
+            if (typeof child.name === 'string') {
+
+                componentName = child.name;
+                pageSetup[child.name] = {};
+                pageSetup[child.name].state = child.state;
+                console.log(pageSetup);
+                console.log(child.children, 'right here!!');
+                if (child.children[0]) {
+                    let providerOrConsumer = String(child.children[0].name['$$typeof']);
+                    console.log('Should be here !!!!', providerOrConsumer);
+                    console.log('Should be here !!!!', typeof providerOrConsumer);
+                    if (providerOrConsumer !== 'undefined') {
+                        console.log('adding to the object!!!');
+                        if (providerOrConsumer === 'Symbol(react.provider)') {
+                            pageSetup[child.name].provider = true;
+                            pageSetup[child.name].contextValue = child.children[0].props.value;
+                            console.log(child.children[0].props.value, 'hello look here <+++++++++ provider vlaue');
+                        } else {
+                            pageSetup[child.name].consumer = true;
+                        }
+                    }
+                }
+            }
+
+
             if (child.children.length >= 1) {
                 // console.log('child hit !')
                 organizeState(child.children);
             }
+
         });
     }
 }
@@ -107,40 +131,19 @@ const organizeState = (state) => {
 
 ///////////////temp/////////////////////
 function stringifyData(obj) {
-    let box = [];
     let data = JSON.parse(
         JSON.stringify(obj, (key, value) => {
-            // console.log('im the value',value);
-            // console.log('im the key',key);
-            // console.log('im the typeof',typeof value);
-            if (typeof value === 'object' || typeof value === 'function'){
-                if(value !== null){
-                    // console.log('im the value after the if.....', value);
-                    if (box.indexOf(value) !== -1) {
-                        return;
-                    }
-                    // console.log('im getting pushed into box***', value);
-                    box.push(value);
-                }
-            }
-            if(typeof value === 'function'){
+            if (typeof value === 'function') {
                 value = value.toString();
             }
             return value;
         })
-    );
-    box = null;
-    console.log('im the DATA from inside the stringigy func AT THE END', data);
+    )
     return data;
 }
 
 
 const transmitData = (state) => {
-    // console.log('cache', state);
-    // console.log('transmit', state);
-    // create a custom event to dispatch for actions for requesting data from background
-    console.log(state, 'im the state withough the stringifyData method');
-    console.log(stringifyData(state), 'im the stringifyData method being used');
     const customEvent = new CustomEvent('ReacText', {
         detail: {
             data: stringifyData(state)
@@ -156,7 +159,27 @@ const transmitData = (state) => {
 /////////////////
 
 let nestedState = checkReactDOM(firstStatePull.current.stateNode);
+console.log(nestedState.currentState[0].children[0], 'lokie here');
+
+let ProviderSymbol_ProviderONE        = nestedState.currentState[0].children[0].children[0].children[0].name.$$typeof;
+let ContextSymbol_ProviderONE         = nestedState.currentState[0].children[0].children[0].children[0].name.context.$$typeof;
+
+let ProviderSymbol_Phillip            = nestedState.currentState[0].children[0].children[0].children[0].children[0].children[0].name.$$typeof;
+let ContextSymbol_Phillip             = nestedState.currentState[0].children[0].children[0].children[0].children[0].children[0].name.context.$$typeof;
+
+let ProviderSymbol_Radio              = nestedState.currentState[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].name.Provider.$$typeof;
+let ContextSymbol_Radio               = nestedState.currentState[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].name.Consumer.$$typeof;
+
+///////////////////////////////TESTING//////////////////////////////
+
+
+console.log( ProviderSymbol_ProviderONE === ContextSymbol_Radio, 'WHY IS THIS TRUE?')
+
+
+///////////////////////////////TESTING//////////////////////////////
+
 organizeState(nestedState.currentState[0].children);
+console.log(pageSetup, 'im the page setup right before transmiting ');
 transmitData(pageSetup);
 
 //////////////////////
