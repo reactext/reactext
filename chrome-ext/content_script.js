@@ -1,5 +1,6 @@
 console.log('content_script.js');
 
+
 function injectScript(file, body) {
   const windowBody = document.getElementsByTagName(body)[0];
   const script = document.createElement('script');
