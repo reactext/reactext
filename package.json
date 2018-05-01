@@ -5,8 +5,7 @@
   "main": "devtools.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -w",
-    "start:dev": "webpack-dev-server --hot"
+    "build": "webpack -w"
   },
   "repository": {
     "type": "git",
@@ -22,6 +21,7 @@
   "dependencies": {
     "babel-preset-env": "^1.6.1",
     "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "request": "^2.85.0",
     "require": "^2.4.20",
     "webpack": "^4.6.0"
@@ -30,6 +30,7 @@
     "babel-loader": "^7.1.4",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
-    "style-loader": "^0.21.0"
+    "style-loader": "^0.21.0",
+    "webpack-cli": "^2.1.2"
   }
 }
