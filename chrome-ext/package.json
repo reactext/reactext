@@ -4,7 +4,9 @@
   "description": "A devTool that allows for easy state management when using React's Context API",
   "main": "devtools.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack -w",
+    "start:dev": "webpack-dev-server --hot"
   },
   "repository": {
     "type": "git",
