@@ -4,7 +4,6 @@ const rid = Object.keys(window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers)[0];
 const stateSet = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._fiberRoots[rid];
 let pageSetup = {};
 let firstStatePull;
-
 let changes;
 let currNestedState;
 
@@ -19,6 +18,9 @@ const checkReactDOM = (reactDOM) => {
     //current state will be an array of all the caches.
     let data = {
         currentState: null
+
+
+
     }
     let cache = [];
 
@@ -87,9 +89,8 @@ const traverseAndGatherReactDOM = (node, cache) => {
 }
 /////////////////////////////////////////////////
 
-const organizeState = (state) => {
+const organizeState = (state, providerSymbols = []) => {
     //passing in the children array
-
     if (state.length >= 1) {
         state.forEach((child) => {
             console.log(child, '<--- child');
@@ -107,10 +108,39 @@ const organizeState = (state) => {
                     if (providerOrConsumer !== 'undefined') {
                         console.log('adding to the object!!!');
                         if (providerOrConsumer === 'Symbol(react.provider)') {
+                            //get providers tracker symbol and add to providerSymbol [];
+                            let subArr = [];
+                            subArr.push(child.name, child.children[0].name.tracker)
+                            providerSymbols.push(subArr);
+
+                            pageSetup[child.name].trackerStrign = 'Hello world!!'
+                            pageSetup[child.name].tracker = child.children[0].name.tracker;
                             pageSetup[child.name].provider = true;
                             pageSetup[child.name].contextValue = child.children[0].props.value;
                             console.log(child.children[0].props.value, 'hello look here <+++++++++ provider vlaue');
                         } else {
+                            //get consumer's tracker symbol and run it against providerSymbol array
+                            //set myProvider = name of provider that has same tracker symbol.
+                            let trackerId = [];
+                            let consumerId = []
+                            let currentChild = child.children[0];
+                            while(currentChild.name.tracker){
+                                consumerId.push(currentChild.name.tracker);
+                                currentChild = currentChild.children[0];
+                            }
+
+                            console.log(consumerId, 'im the consumer Id');
+                            providerSymbols.forEach(arr => {
+                                if(consumerId.includes(arr[1])){
+
+
+                                    console.log('IT WORKS MOTHAFUCKA!!!!', arr[0]);
+                                    trackerId.push(arr[0]);
+                                }
+                            });
+
+                            pageSetup[child.name].tracker = trackerId;
+                            pageSetup[child.name].trackerStrign = 'Hello world!!'
                             pageSetup[child.name].consumer = true;
                         }
                     }
@@ -120,11 +150,12 @@ const organizeState = (state) => {
 
             if (child.children.length >= 1) {
                 // console.log('child hit !')
-                organizeState(child.children);
+                organizeState(child.children, providerSymbols);
             }
 
         });
     }
+    console.log(providerSymbols, '<====providerSymbols');
 }
 
 /////////////////////////////////////////////////
@@ -136,14 +167,17 @@ function stringifyData(obj) {
             if (typeof value === 'function') {
                 value = value.toString();
             }
+
             return value;
         })
     )
+    console.log(data, 'this is after data has been changed');
     return data;
 }
 
 
 const transmitData = (state) => {
+    console.log(state, 'im state in the transmit data func');
     const customEvent = new CustomEvent('ReacText', {
         detail: {
             data: stringifyData(state)
@@ -190,6 +224,8 @@ transmitData(pageSetup);
 (function connectReactDevTool() {
     devTools.onCommitFiberRoot = ((original) => {
         return (...args) => {
+            console.log(args, 'im the args from inside monkey patch');
+
             getStateChanges(args[1]);
             return original(...args);
         };
