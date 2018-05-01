@@ -5,7 +5,7 @@ let webpack = require('webpack');
 module.exports = {
     entry: {    
         mode: 'development',
-        entry: './main.js',},
+        entry: './devtools.js',},
     output: {
         path: path.resolve(__dirname + '/build'),
         filename: 'bundle.js',

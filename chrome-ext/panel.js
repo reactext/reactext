@@ -45,14 +45,6 @@ function do_something(msg) {
 
     });
 
-
-
-
-
-
-
-
-
     // Object.keys(msg.data).forEach((node) => {
     //     console.log(node,'im the node from panel');
     //     let stateObj = msg.data[node];
