@@ -1,13 +1,14 @@
 'use strict';
 
+const path = require('path');
 let webpack = require('webpack');
 
 module.exports = {
+    mode: 'development',
     entry: {    
-        mode: 'development',
-        entry: './devtools.js',},
+        entry: './frontend/index.js',},
     output: {
-        path: path.resolve(__dirname + '/build'),
+        path: path.resolve(__dirname + '/chrome-ext/build'),
         filename: 'bundle.js',
     },
     module: {
@@ -36,9 +37,4 @@ module.exports = {
         }
         ]
     },
-    devServer: {
-        publicPath: "/build/",
-        hot: true,
-        port: 3000
-    }
 };
