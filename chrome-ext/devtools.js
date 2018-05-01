@@ -1,6 +1,6 @@
 function createPanel() {
     console.log('createeeee Panel FIRREEEDDDD!')
-    chrome.devtools.panels.create('Reactext',
+    chrome.devtools.panels.create('Reactext', //names tab in devTool
         '/icon.png',
         '/panel.html',
         function (extensionPanel) {
