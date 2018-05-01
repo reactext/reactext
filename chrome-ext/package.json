@@ -24,5 +24,11 @@
     "request": "^2.85.0",
     "require": "^2.4.20",
     "webpack": "^4.6.0"
+  },
+  "devDependencies": {
+    "babel-loader": "^7.1.4",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "style-loader": "^0.21.0"
   }
 }
