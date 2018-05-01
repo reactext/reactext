@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/reactext/reactext#readme",
   "dependencies": {
+    "react": "^16.3.2",
     "request": "^2.85.0",
     "require": "^2.4.20"
   }
