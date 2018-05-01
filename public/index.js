@@ -2,10 +2,9 @@ import React from 'react';
 import { render } from 'react-dom';
 import App from './App.jsx';
 
-console.log('inside index.js render')
+console.log('inside index.js render', App)
 
 render(
-    // wrap the App in the Provider and pass in the store
     <App />
     , document.getElementById('container')
 )

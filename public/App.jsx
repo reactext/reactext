@@ -6,11 +6,12 @@ class App extends Component {
   }
 
   render() {
-    return(
+    console.log('immmmmmmmm innnnnnn appp.jsx')
+    return (
       <div>
-        <h1>HEYYYYYYYYY I'M FROM APP.jsx</h1>
+        <h1>HEYYYYYYY FROMMMMMM APPPPPPPP!!!!</h1>
       </div>
-    )
+    );
   }
 }
 
