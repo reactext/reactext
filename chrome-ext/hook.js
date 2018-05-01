@@ -93,20 +93,20 @@ const organizeState = (state, providerSymbols = []) => {
     //passing in the children array
     if (state.length >= 1) {
         state.forEach((child) => {
-            console.log(child, '<--- child');
+            // console.log(child, '<--- child');
             if (typeof child.name === 'string') {
 
                 componentName = child.name;
                 pageSetup[child.name] = {};
                 pageSetup[child.name].state = child.state;
-                console.log(pageSetup);
-                console.log(child.children, 'right here!!');
+                // console.log(pageSetup);
+                // console.log(child.children, 'right here!!');
                 if (child.children[0]) {
                     let providerOrConsumer = String(child.children[0].name['$$typeof']);
-                    console.log('Should be here !!!!', providerOrConsumer);
-                    console.log('Should be here !!!!', typeof providerOrConsumer);
+                    // console.log('Should be here !!!!', providerOrConsumer);
+                    // console.log('Should be here !!!!', typeof providerOrConsumer);
                     if (providerOrConsumer !== 'undefined') {
-                        console.log('adding to the object!!!');
+                        // console.log('adding to the object!!!');
                         if (providerOrConsumer === 'Symbol(react.provider)') {
                             //get providers tracker symbol and add to providerSymbol [];
                             let subArr = [];
@@ -117,7 +117,7 @@ const organizeState = (state, providerSymbols = []) => {
                             pageSetup[child.name].tracker = child.children[0].name.tracker;
                             pageSetup[child.name].provider = true;
                             pageSetup[child.name].contextValue = child.children[0].props.value;
-                            console.log(child.children[0].props.value, 'hello look here <+++++++++ provider vlaue');
+                            // console.log(child.children[0].props.value, 'hello look here <+++++++++ provider vlaue');
                         } else {
                             //get consumer's tracker symbol and run it against providerSymbol array
                             //set myProvider = name of provider that has same tracker symbol.
@@ -129,12 +129,12 @@ const organizeState = (state, providerSymbols = []) => {
                                 currentChild = currentChild.children[0];
                             }
 
-                            console.log(consumerId, 'im the consumer Id');
+                            // console.log(consumerId, 'im the consumer Id');
                             providerSymbols.forEach(arr => {
                                 if(consumerId.includes(arr[1])){
 
 
-                                    console.log('IT WORKS MOTHAFUCKA!!!!', arr[0]);
+                                    // console.log('IT WORKS MOTHAFUCKA!!!!', arr[0]);
                                     trackerId.push(arr[0]);
                                 }
                             });
@@ -155,7 +155,7 @@ const organizeState = (state, providerSymbols = []) => {
 
         });
     }
-    console.log(providerSymbols, '<====providerSymbols');
+    // console.log(providerSymbols, '<====providerSymbols');
 }
 
 /////////////////////////////////////////////////
@@ -177,7 +177,7 @@ function stringifyData(obj) {
 
 
 const transmitData = (state) => {
-    console.log(state, 'im state in the transmit data func');
+    // console.log(state, 'im state in the transmit data func');
     const customEvent = new CustomEvent('ReacText', {
         detail: {
             data: stringifyData(state)
@@ -207,7 +207,7 @@ let ContextSymbol_Radio               = nestedState.currentState[0].children[0].
 ///////////////////////////////TESTING//////////////////////////////
 
 
-console.log( ProviderSymbol_ProviderONE === ContextSymbol_Radio, 'WHY IS THIS TRUE?')
+// console.log( ProviderSymbol_ProviderONE === ContextSymbol_Radio, 'WHY IS THIS TRUE?')
 
 
 ///////////////////////////////TESTING//////////////////////////////
@@ -224,7 +224,7 @@ transmitData(pageSetup);
 (function connectReactDevTool() {
     devTools.onCommitFiberRoot = ((original) => {
         return (...args) => {
-            console.log(args, 'im the args from inside monkey patch');
+            // console.log(args, 'im the args from inside monkey patch');
 
             getStateChanges(args[1]);
             return original(...args);
@@ -234,13 +234,13 @@ transmitData(pageSetup);
 
 //getStatChanges takes in an instance and
 async function getStateChanges(instance) {
-    console.log(instance, '<---instance')
+    // console.log(instance, '<---instance')
     try {
         changes = await instance;
         currNestedState = await checkReactDOM(changes);
         organizeState(currNestedState.currentState[0].children);
         transmitData(pageSetup);
     } catch (e) {
-        console.log(e);
+        // console.log(e);
     }
 }
