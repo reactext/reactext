@@ -1,5 +1,7 @@
 import React from 'react';
 import InitialState from '.././InitialState.jsx';
+import StateChanges from '.././StateChanges.jsx';
+
 
 const LogContainer = props => {
     console.log('props in LC', props)
@@ -7,6 +9,7 @@ const LogContainer = props => {
       <div className="LogContainer" style={{backgroundColor:'orange'}}>
         <h4>This is the log container.</h4>
         <InitialState initState={props.initState}/>
+        <StateChanges stateChanges={props.stateChanges} />
       </div>
     );
   };
