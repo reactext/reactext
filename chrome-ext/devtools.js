@@ -30,6 +30,10 @@ function createPanel() {
                 while (msg = data.shift()) {
                     console.log('data in devtoool line 31', data)
                     console.log('mssssg in devtoool line 32', msg)
+                    _window.respond = function () {
+                        console.log('I rannnn successfullly YAYYYYY!!!!')
+                        port.postMessage(msg)
+                    }
                 }
             });
 
@@ -40,6 +44,7 @@ function createPanel() {
                 // If panel does not exist (yet), the data will be queued.
                 console.log('message from the devtools', msg);
                 console.log('windoewwww from the devtools', window);
+
 
                 if (_window && msg.data) {
                     console.log('went inside line 51')
@@ -54,6 +59,9 @@ function createPanel() {
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
                     data.push(msg);
+                    _window.blahblah = function () {
+                        console.log('I rannnn successfullly YAYYYYY!!!!')
+                    }
                     port.postMessage({
                         name: 'sendData',
                         data: msg,

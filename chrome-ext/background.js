@@ -104,5 +104,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
         console.log(changesToState, '<--------------------------this is changing')
     }
     console.log('beffore sendStateChanges', connections[tabId], '---------->', changesToState)
-    sendStateChanges(connections[tabId], changesToState);
+    if (Object.keys(connections).length !== 0 ) {
+        sendStateChanges(connections[tabId], changesToState);
+    }
 });
