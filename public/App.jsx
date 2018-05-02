@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import State from './State.jsx';
+import Log from './Log.jsx';
 
 
 class App extends Component {
@@ -13,7 +13,7 @@ class App extends Component {
     return (
       <div>
         <h1>Reactext</h1>
-        <State initState ={this.props.initState} />
+        <Log initState ={this.props.initState} />
       </div>
     );
   }

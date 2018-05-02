@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class State extends Component {
+class Log extends Component {
   constructor(props) {
     super(props);
   }
@@ -16,4 +16,4 @@ class State extends Component {
   }
 }
 
-export default State;
+export default Log;
