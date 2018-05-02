@@ -6,14 +6,14 @@ let changesToState;
 
 //This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(port => {
-    console.log(port, '<-- im the port');
-    console.log(connections, '<-- im the connections');
+    // console.log(port, '<-- im the port');
+    // console.log(connections, '<-- im the connections');
 
     //listens for post Message on port (i.e. devtools.js)
     port.onMessage.addListener(msg => {
         // Received message from devtools. Do something:
-        console.log('Received message from devtools page', msg);
-        console.log('port in addListener line 21', port);
+        // console.log('Received message from devtools page', msg);
+        // console.log('port in addListener line 21', port);
 
         //when a devTool is opened, this function adds a tab info to the conections object
         const addActiveTabToConnections = msg => {
@@ -38,7 +38,7 @@ chrome.runtime.onConnect.addListener(port => {
         }
     });
 
-    console.log('NEW STATEEEEE!!!!', state[state.length - 1]);
+    // console.log('NEW STATEEEEE!!!!', state[state.length - 1]);
     notifyDevtools(port, state[state.length - 1]);
 
 
@@ -46,21 +46,21 @@ chrome.runtime.onConnect.addListener(port => {
 
 // Function to send a message to all devtools.html views:
 function notifyDevtools(port, msg) {
-    console.log('msg inside of notifyDevTools line 46', port)
-    console.log('msg inside of notifyDevTools line 47', msg)
+    // console.log('msg inside of notifyDevTools line 46', port)
+    // console.log('msg inside of notifyDevTools line 47', msg)
     port.postMessage(msg);
 }
 
 function sendStateChanges(port, msg) {
-    console.log('msg sendStateChanges', port)
-    console.log('msg sendStateChanges', msg)
+    // console.log('msg sendStateChanges', port)
+    // console.log('msg sendStateChanges', msg)
     port.postMessage(msg);
 }
 
 //the following API receives a message from the content script
 //a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's state changes
 chrome.runtime.onMessage.addListener(function (msg, sender, res) {
-    console.log(sender, 'SENDDDDDDDDDDDDERRRRRRRRR')
+    // console.log(sender, 'SENDDDDDDDDDDDDERRRRRRRRR')
     let tabId = sender.tab.id;
     // validate we are listening for the correct msg
     if (msg.from === 'content_script') {
@@ -82,9 +82,9 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                     let prevStateProps = prev.data[prevKeys[i]].state; // prevStateProps is the state object for the component.
                     let currStateProps = curr.data[prevKeys[i]].state; // same as prevStateProps but for current state.
 
-                    console.log(prevStateProps, 'LOOK AT ME FIRST !!!!');
+                    // console.log(prevStateProps, 'LOOK AT ME FIRST !!!!');
                     if (prevStateProps !== currStateProps) { // This is filtering out the nulls.
-                        console.log(prevStateProps, 'LOOK AT ME !!!!');
+                        // console.log(prevStateProps, 'LOOK AT ME !!!!');
                         let stateKeys = Object.keys(prevStateProps)
                         for (let j = 0; j < stateKeys.length; j++) {
                             if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
@@ -100,9 +100,9 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
         };
         //message object from content_script is stored to state array
         state.push(message);
-        console.log(state, '<----this state array is growing')
-        console.log(changesToState, '<--------------------------this is changing')
+        // console.log(state, '<----this state array is growing')
+        // console.log(changesToState, '<--------------------------this is changing')
     }
-    console.log('beffore sendStateChanges', connections[tabId], '---------->', changesToState)
+    // console.log('beffore sendStateChanges', connections[tabId], '---------->', changesToState)
     sendStateChanges(connections[tabId], changesToState);
 });
