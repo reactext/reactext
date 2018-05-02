@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Log from './Log.jsx';
-
+import VisContainer from './containers/VisContainer.jsx';
+import LogContainer from './containers/LogContainer.jsx';
 
 class App extends Component {
   constructor(props) {
@@ -9,11 +9,11 @@ class App extends Component {
 
   render() {
     console.log('immmmmmmmm PROPSSSS innnnnnn appp.jsx', this.props)
- 
     return (
       <div>
         <h1>Reactext</h1>
-        <Log initState ={this.props.initState} />
+        <VisContainer />
+        <LogContainer initState ={this.props.initState} />
       </div>
     );
   }
