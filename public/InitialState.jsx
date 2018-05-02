@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 
-class Log extends Component {
+class InitialState extends Component {
   constructor(props) {
     super(props);
   }
 
   render() {
-    console.log('PROPPPSSS In State', this.props)
+    console.log('PROPPPSSS In log', this.props)
     let page = this.props.initState.data;
     let stringPage = JSON.stringify(page)
     console.log('stringggggg page', stringPage)
     return (
-      <div>{stringPage}</div>
+      <div className='initialState'>{stringPage}</div>
     );
   }
 }
 
-export default Log;
+export default InitialState;
