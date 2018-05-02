@@ -10,7 +10,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname + '/chrome-ext/build'),
-        filename: 'bundle.js',
+        filename: 'panel.js',
     },
     module: {
         rules: [
