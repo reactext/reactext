@@ -16,12 +16,8 @@ function do_something(msg) {
 
     Object.keys(value).forEach(propComp => {
         let mainListItem = document.createElement('li');
-
-        // console.log(propComp, 'i ALSO shouldnt be undefined ');
-        // console.log(propComp,'<======= this is the propComp', value[propComp], '<===== this is the valuePropComp')
         if(typeof value[propComp] !== 'object' || (typeof value[propComp] === 'object' && value[propComp] === null)){
             mainListItem.innerText = `${propComp} : ${value[propComp]}`;
-            // console.log(value, 'I shouldnt be undefined!!!');
         }else if(Array.isArray(value[propComp])){
             mainListItem.innerText = `${propComp} : ${value[propComp]}`;
         }
@@ -32,10 +28,6 @@ function do_something(msg) {
             // subUl.appendChild(stateTag);
 
 
-            // console.log('im the test 1', value);
-            // console.log('im the test 2', propComp);
-            // console.log('im the test 3', value[propComp]);
-            console.log(propComp,'<======= this is the propComp', value[propComp], '<===== this is the valuePropComp')
 
             Object.keys(value[propComp]).forEach(subpromp => {
                 let sublistItem = document.createElement('li');
@@ -50,7 +42,6 @@ function do_something(msg) {
     section.appendChild(title);
     section.appendChild(mainList);
     document.querySelector('#container').appendChild(section);
-    // console.log(document);
     
     });
 
