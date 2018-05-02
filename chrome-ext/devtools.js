@@ -5,7 +5,6 @@ function createPanel() {
         '/panel.html',
         function (extensionPanel) {
             let _window; // This will hold the reference to panel.html's `window`
-            console.log('immmm the __window variable', _window);
 
             let data = [];
 
@@ -26,14 +25,17 @@ function createPanel() {
                 console.log('immmm the __window variable  line 2666666', _window);
 
                 // Release queued data
+                console.log('data in devtoool line 31', data)
+
                 let msg;
                 while (msg = data.shift()) {
-                    console.log('data in devtoool line 31', data)
                     console.log('mssssg in devtoool line 32', msg)
-                    _window.respond = function () {
+                    // // _window.test();
+                    _window.respond = function (msg) {
                         console.log('I rannnn successfullly YAYYYYY!!!!')
                         port.postMessage(msg)
                     }
+                    chrome.runtime.sendMessage({name: 'sendData', initState: msg});
                 }
             });
 
@@ -42,39 +44,38 @@ function createPanel() {
 
                 // Write information to the panel, if exists.
                 // If panel does not exist (yet), the data will be queued.
-                console.log('message from the devtools', msg);
-                console.log('windoewwww from the devtools', window);
-
+                console.log('windowwww from the devtools', window);
+                console.log('_________WINDOW from the devtools', _window);
 
                 if (_window && msg.data) {
                     console.log('went inside line 51')
-                    port.postMessage({
-                        name: 'sendData',
-                        data: msg,
-                    })
                 }
-                if (_window && msg.stateHasChanged) {
+                else if (_window && msg.stateHasChanged) {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
                 }
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
                     data.push(msg);
-                    _window.blahblah = function () {
-                        console.log('I rannnn successfullly YAYYYYY!!!!')
-                    }
-                    port.postMessage({
-                        name: 'sendData',
-                        data: msg,
-                    })
+                    console.log(data, '<-----data 62')
+
                 }
+                // _window.blahblah = function () {
+                //     console.log('I rannnn successfullly YAYYYYY!!!!')
+                // }
+                // port.postMessage({
+                //     name: 'sendData',
+                //     data: msg,
+                // })
+
+                console.log(data, '<-----data 71');
+
+                port.postMessage({ name: 'sendData', initState: msg })
             });
 
             port.postMessage({
                 name: 'connect',
                 tabId: chrome.devtools.inspectedWindow.tabId,
             })
-
-
         });
 };
 

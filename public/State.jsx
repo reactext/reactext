@@ -9,8 +9,9 @@ class State extends Component {
     console.log('PROPPPSSS In State', this.props)
     let page = this.props.initState.data;
     let stringPage = JSON.stringify(page)
+    console.log('stringggggg page', stringPage)
     return (
-      <div>{this.props.initState.data}</div>
+      <div>{stringPage}</div>
     );
   }
 }
