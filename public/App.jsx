@@ -11,7 +11,7 @@ class App extends Component {
     console.log('immmmmmmmm PROPSSSS innnnnnn appp.jsx', this.props)
     return (
       <div>
-        <h1>Reactext</h1>
+        <h4>Reactext</h4>
         <VisContainer />
         <LogContainer initState ={this.props.initState} />
       </div>

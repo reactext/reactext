@@ -4,7 +4,7 @@ import InitialState from '.././InitialState.jsx';
 const LogContainer = props => {
     console.log('props in LC', props)
     return(
-      <div className="LogContainer">
+      <div className="LogContainer" style={{backgroundColor:'orange'}}>
         <h4>This is the log container.</h4>
         <InitialState initState={props.initState}/>
       </div>

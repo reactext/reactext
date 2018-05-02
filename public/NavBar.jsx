@@ -8,7 +8,7 @@ class NavBar extends Component {
     render() {
       console.log('immmmmmmmm PROPSSSS innnnnnn appp.jsx', this.props)
       return (
-        <div>
+        <div className='navBar' style={{backgroundColor:'lightBlue'}}>
           <h3>NavBar</h3>
         </div>
       );
