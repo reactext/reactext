@@ -1,6 +1,10 @@
 function createPanel() {
+<<<<<<< HEAD
     console.log('createeeee Panel FIRREEEDDDD!')
     chrome.devtools.panels.create('Reactext', //names tab in devTool
+=======
+    chrome.devtools.panels.create('Reactext',
+>>>>>>> 5aeecf82fe68b058b5e48fea98b7d2fd5aae3e43
         '/icon.png',
         '/panel.html',
         function (extensionPanel) {
@@ -14,7 +18,6 @@ function createPanel() {
             //connect to background.js with connect method, pass in object with name property
             let port = chrome.runtime.connect({ name: portId });
 
-            console.log('im the port object', port);
 
             //show extension panel
             extensionPanel.onShown.addListener(function tmp(panelWindow) {
@@ -30,8 +33,16 @@ function createPanel() {
 
                 let msg;
                 while (msg = data.shift()) {
+<<<<<<< HEAD
                     console.log('mssssg in devtoool line 32', msg)
                     chrome.runtime.sendMessage({name: 'sendData', initState: msg});
+=======
+                    _window.do_something(msg);
+                    // Respond to background
+                    _window.respond = function (msg) {
+                        port.postMessage(msg);
+                    };
+>>>>>>> 5aeecf82fe68b058b5e48fea98b7d2fd5aae3e43
                 }
             });
 
@@ -40,6 +51,7 @@ function createPanel() {
 
                 // Write information to the panel, if exists.
                 // If panel does not exist (yet), the data will be queued.
+<<<<<<< HEAD
                 console.log('windowwww from the devtools', window);
                 console.log('_________WINDOW from the devtools', _window);
 
@@ -49,6 +61,14 @@ function createPanel() {
                 else if (_window && msg.stateHasChanged) {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
                     chrome.runtime.sendMessage({name: 'stateChanges', stateChanges: msg})
+=======
+                // if (_window && msg.data) {
+                //     _window.do_something(msg);
+                // }
+                if (_window && msg.stateHasChanged) {
+ 
+                    _window.do_somethingElse(msg)
+>>>>>>> 5aeecf82fe68b058b5e48fea98b7d2fd5aae3e43
                 }
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)

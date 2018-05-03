@@ -10,7 +10,7 @@ let currNestedState;
 stateSet.forEach((e) => {
     firstStatePull = e;
 });
-console.log('ORIGINAL DATA TO WORK WITH ', firstStatePull);
+// console.log('ORIGINAL DATA TO WORK WITH ', firstStatePull);
 ////////////////
 ///functions////
 ////////////////
@@ -37,7 +37,6 @@ const checkReactDOM = (reactDOM) => {
 
 ///////////////////////////////////////
 const traverseAndGatherReactDOM = (node, cache) => {
-    // console.log('IM THE NODE!!!!',node);
     let component = {
         id: null,
         name: '',
@@ -93,31 +92,35 @@ const organizeState = (state, providerSymbols = []) => {
     //passing in the children array
     if (state.length >= 1) {
         state.forEach((child) => {
-            // console.log(child, '<--- child');
             if (typeof child.name === 'string') {
-
                 componentName = child.name;
                 pageSetup[child.name] = {};
                 pageSetup[child.name].state = child.state;
-                // console.log(pageSetup);
-                // console.log(child.children, 'right here!!');
+                pageSetup[child.name].children = [];
+                let tempChild = child;
+
+                //filtering out tags that we don't want in initial state
+                while (tempChild){
+                    tempChild.children.forEach(obj => {
+                        // if need more data for tree do below
+                        if (typeof obj.name === 'string' && obj.name !== 'div' && obj.name !== 'img' && obj.name !== 'h1' && obj.name !== 'h3' && obj.name !== '') { 
+                        pageSetup[child.name].children.push(obj.name);
+                        }
+                    })
+                    tempChild = tempChild.children[0];
+                }
+
                 if (child.children[0]) {
                     let providerOrConsumer = String(child.children[0].name['$$typeof']);
-                    // console.log('Should be here !!!!', providerOrConsumer);
-                    // console.log('Should be here !!!!', typeof providerOrConsumer);
                     if (providerOrConsumer !== 'undefined') {
-                        // console.log('adding to the object!!!');
                         if (providerOrConsumer === 'Symbol(react.provider)') {
                             //get providers tracker symbol and add to providerSymbol [];
                             let subArr = [];
                             subArr.push(child.name, child.children[0].name.tracker)
                             providerSymbols.push(subArr);
-
-                            pageSetup[child.name].trackerStrign = 'Hello world!!'
                             pageSetup[child.name].tracker = child.children[0].name.tracker;
                             pageSetup[child.name].provider = true;
                             pageSetup[child.name].contextValue = child.children[0].props.value;
-                            // console.log(child.children[0].props.value, 'hello look here <+++++++++ provider vlaue');
                         } else {
                             //get consumer's tracker symbol and run it against providerSymbol array
                             //set myProvider = name of provider that has same tracker symbol.
@@ -129,18 +132,14 @@ const organizeState = (state, providerSymbols = []) => {
                                 currentChild = currentChild.children[0];
                             }
 
-                            // console.log(consumerId, 'im the consumer Id');
                             providerSymbols.forEach(arr => {
                                 if(consumerId.includes(arr[1])){
+                                  trackerId.push(arr[0]);
 
-
-                                    // console.log('IT WORKS MOTHAFUCKA!!!!', arr[0]);
-                                    trackerId.push(arr[0]);
+                                    pageSetup[child.name].tracker = trackerId;
                                 }
                             });
 
-                            pageSetup[child.name].tracker = trackerId;
-                            pageSetup[child.name].trackerStrign = 'Hello world!!'
                             pageSetup[child.name].consumer = true;
                         }
                     }
@@ -149,13 +148,11 @@ const organizeState = (state, providerSymbols = []) => {
 
 
             if (child.children.length >= 1) {
-                // console.log('child hit !')
                 organizeState(child.children, providerSymbols);
             }
 
         });
     }
-    // console.log(providerSymbols, '<====providerSymbols');
 }
 
 /////////////////////////////////////////////////
@@ -171,13 +168,11 @@ function stringifyData(obj) {
             return value;
         })
     )
-    console.log(data, 'this is after data has been changed');
     return data;
 }
 
 
 const transmitData = (state) => {
-    // console.log(state, 'im state in the transmit data func');
     const customEvent = new CustomEvent('ReacText', {
         detail: {
             data: stringifyData(state)
@@ -193,18 +188,15 @@ const transmitData = (state) => {
 /////////////////
 
 let nestedState = checkReactDOM(firstStatePull.current.stateNode);
-console.log(nestedState.currentState[0].children[0], 'lokie here');
 
 ///////////////////////////////TESTING//////////////////////////////
 
 
-// console.log( ProviderSymbol_ProviderONE === ContextSymbol_Radio, 'WHY IS THIS TRUE?')
 
 
 ///////////////////////////////TESTING//////////////////////////////
 
 organizeState(nestedState.currentState[0].children);
-console.log(pageSetup, 'im the page setup right before transmiting ');
 transmitData(pageSetup);
 
 //////////////////////
@@ -215,23 +207,20 @@ transmitData(pageSetup);
 (function connectReactDevTool() {
     devTools.onCommitFiberRoot = ((original) => {
         return (...args) => {
-            // console.log(args, 'im the args from inside monkey patch');
-
             getStateChanges(args[1]);
             return original(...args);
         };
     })(devTools.onCommitFiberRoot);
 }());
 
-//getStatChanges takes in an instance and
+//getStatChanges takes in an instance
 async function getStateChanges(instance) {
-    // console.log(instance, '<---instance')
     try {
         changes = await instance;
         currNestedState = await checkReactDOM(changes);
         organizeState(currNestedState.currentState[0].children);
         transmitData(pageSetup);
     } catch (e) {
-        // console.log(e);
+        console.log('this error is in getStateChanges in hook.js', e);
     }
 }
