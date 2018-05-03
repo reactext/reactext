@@ -8,8 +8,8 @@ const LogContainer = props => {
     return(
       <div className="LogContainer" style={{backgroundColor:'orange'}}>
         <h4>This is the log container.</h4>
-        <InitialState initState={props.initState}/>
-        <StateChanges stateChanges={props.stateChanges} />
+        <InitialState initialState={props.initState}/>
+        <StateChanges stateChangesList={props.stateChangesList} />
       </div>
     );
   };
