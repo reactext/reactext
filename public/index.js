@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import App from './App.jsx';
 
 let initialState;
-let stateChanges = '';
+let stateChanges = [];
 
 chrome.runtime.onMessage.addListener(msg => {
     console.log(msg, '<-- msgggggg');
@@ -16,17 +16,18 @@ chrome.runtime.onMessage.addListener(msg => {
         console.log('Received message from INDEXXXXXXX page', msg);
         initialState = msg.initState;
         renderApp(initialState, stateChanges)
-        console.log('INSIDEEEEEE STATE CHANGE 18 here is initialState', initialState)
     }
-    // if (msg.name === 'stateChanges') {
-    //     console.log('Received message in INDEXXXXX page', msg);
-    //     console.log('INSIDEEEEEE STATE CHANGE 21 here is initialState', initialState)
-    //     stateChanges = msg.stateChanges;
-    //     renderApp(initialState, stateChanges)
-    // }
+    if (msg.name === 'stateChanges') {
+        console.log('Received message in INDEXXXXX MSG === stateChanges page', msg.stateChanges);
+        //delete stateHasChanged property in msg.stateChanges
+        delete msg.stateChanges.stateHasChanged;
+        stateChanges.push(msg.stateChanges);
+        renderApp(initialState, stateChanges)
+    }
 });
 
 function renderApp(prop1, prop2) {
+    console.log('in render app', prop2)
     render(
         <App initState={prop1} stateChanges={prop2} />
         , document.getElementById('container')

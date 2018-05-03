@@ -195,15 +195,6 @@ const transmitData = (state) => {
 let nestedState = checkReactDOM(firstStatePull.current.stateNode);
 console.log(nestedState.currentState[0].children[0], 'lokie here');
 
-let ProviderSymbol_ProviderONE        = nestedState.currentState[0].children[0].children[0].children[0].name.$$typeof;
-let ContextSymbol_ProviderONE         = nestedState.currentState[0].children[0].children[0].children[0].name.context.$$typeof;
-
-let ProviderSymbol_Phillip            = nestedState.currentState[0].children[0].children[0].children[0].children[0].children[0].name.$$typeof;
-let ContextSymbol_Phillip             = nestedState.currentState[0].children[0].children[0].children[0].children[0].children[0].name.context.$$typeof;
-
-let ProviderSymbol_Radio              = nestedState.currentState[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].name.Provider.$$typeof;
-let ContextSymbol_Radio               = nestedState.currentState[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].name.Consumer.$$typeof;
-
 ///////////////////////////////TESTING//////////////////////////////
 
 

@@ -34,7 +34,6 @@ class App extends Component {
 
   componentDidMount() {
     console.log(this.props.initState, '<------ initState inside component didMount')
-
     this.saveInitialState(this.props.initState.data);
     // console.log(this.props.stateChanges, '<------ inside component didMount')
     // this.saveStateChanges(this.props.stateChanges)
