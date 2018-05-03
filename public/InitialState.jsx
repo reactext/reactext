@@ -14,7 +14,9 @@ class InitialState extends Component {
     console.log('comp', comp)
     for (let i = 0; i < comp.length; i++) {
       //take out h3, img, div, etc from intitial state
-      if (comp[i][1].state !== null || Object.keys(comp[i][1]).length !== 1) {
+      console.log(comp[i][1].state, 'state in compt')
+      console.log(comp[i][1].children, 'children in comp')
+      if (comp[i][1].state !== null || comp[i][1].children.length > 0) {
         initialStateComp.push(<InitialComp key={i} compInfo={comp[i]} />)
       }
     }
