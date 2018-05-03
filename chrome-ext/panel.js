@@ -14,6 +14,37 @@ function do_something(msg) {
         let mainList = document.createElement('ul');
 
 
+<<<<<<< HEAD
+        Object.keys(value).forEach(propComp => {
+            let mainListItem = document.createElement('li');
+
+            console.log(propComp, 'i ALSO shouldnt be undefined ');
+            if (typeof value[propComp] !== 'object' || (typeof value[propComp] === 'object' && value[propComp] === null)) {
+                mainListItem.innerText = `${propComp} : ${value[propComp]}`;
+                console.log(value, 'I shouldnt be undefined!!!');
+            } else if (Array.isArray(value[propComp])) {
+                mainListItem.innerText = `${propComp} : ${value[propComp]}`;
+            }
+            else {
+                let subUl = document.createElement('ul');
+                console.log('im the test 1', value);
+                console.log('im the test 2', propComp);
+                console.log('im the test 3', value[propComp]);
+                Object.keys(value[propComp]).forEach(subpromp => {
+                    let sublistItem = document.createElement('li');
+                    sublistItem.innerText = `${subpromp} : ${value[propComp][subpromp]}`;
+                    subUl.appendChild(sublistItem);
+                });
+                mainListItem.appendChild(subUl);
+            }
+            mainList.appendChild(mainListItem);
+        });
+        section.appendChild(title);
+        section.appendChild(mainList);
+        document.querySelector('#container').appendChild(section);
+        console.log(document);
+
+=======
     Object.keys(value).forEach(propComp => {
         let mainListItem = document.createElement('li');
         if(typeof value[propComp] !== 'object' || (typeof value[propComp] === 'object' && value[propComp] === null)){
@@ -43,15 +74,8 @@ function do_something(msg) {
     section.appendChild(mainList);
     document.querySelector('#container').appendChild(section);
     
+>>>>>>> 5aeecf82fe68b058b5e48fea98b7d2fd5aae3e43
     });
-
-
-
-
-
-
-
-
 
     // Object.keys(msg.data).forEach((node) => {
         // console.log(node,'im the node from panel');
@@ -99,7 +123,7 @@ function do_somethingElse(msg) {
             let state = document.createElement('div');
             // console.log(msg[curr], '<------------CURRRR');
             let obj = msg[curr];
-            state.innerHTML =  `${obj.propName} was ${obj.prev} and is now ---> ${obj.curr}`;
+            state.innerHTML = `${obj.propName} was ${obj.prev} and is now ---> ${obj.curr}`;
             div2.appendChild(state);
             let container = document.querySelector('#container')
             document.querySelector('#container').appendChild(div2);
@@ -112,3 +136,4 @@ document.documentElement.onclick = function () {
     // the panel can only be clicked when it's visible...
     respond('response from panel upon clicking :)');
 };
+

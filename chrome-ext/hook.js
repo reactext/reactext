@@ -99,6 +99,7 @@ const organizeState = (state, providerSymbols = []) => {
                 pageSetup[child.name].children = [];
                 let tempChild = child;
 
+                //filtering out tags that we don't want in initial state
                 while (tempChild){
                     tempChild.children.forEach(obj => {
                         // if need more data for tree do below
@@ -206,14 +207,13 @@ transmitData(pageSetup);
 (function connectReactDevTool() {
     devTools.onCommitFiberRoot = ((original) => {
         return (...args) => {
-
             getStateChanges(args[1]);
             return original(...args);
         };
     })(devTools.onCommitFiberRoot);
 }());
 
-//getStatChanges takes in an instance and
+//getStatChanges takes in an instance
 async function getStateChanges(instance) {
     try {
         changes = await instance;
@@ -221,5 +221,6 @@ async function getStateChanges(instance) {
         organizeState(currNestedState.currentState[0].children);
         transmitData(pageSetup);
     } catch (e) {
+        console.log('this error is in getStateChanges in hook.js', e);
     }
 }
