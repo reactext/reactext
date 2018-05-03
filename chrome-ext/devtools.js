@@ -21,6 +21,7 @@ function createPanel() {
                 console.log('immmm in the extension panel on shown', panelWindow);
 
                 extensionPanel.onShown.removeListener(tmp); // Run once only
+                
                 _window = panelWindow;
                 console.log('immmm the __window variable  line 2666666', _window);
 
@@ -69,7 +70,7 @@ function createPanel() {
 
                 console.log(data, '<-----data 71');
 
-                port.postMessage({ name: 'sendData', initState: msg })
+                // port.postMessage({ name: 'sendData', initState: msg })
             });
 
             port.postMessage({

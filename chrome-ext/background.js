@@ -107,8 +107,10 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
             }
             changesToState = findChanges(prev, curr)
             console.log(changesToState, '<--------------------------this is changing');
+            console.log(connections, 'connections--------->')
+            console.log(connections[tabId], 'connections[tab]---------->')
 
-            console.log('beffore sendStateChanges', connections[tabId], '---------->', changesToState);
+            console.log('beffore sendStateChanges changesToState', changesToState);
             sendStateChanges(connections[tabId], changesToState);
         }
 
