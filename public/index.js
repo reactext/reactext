@@ -12,6 +12,9 @@ chrome.runtime.onMessage.addListener(msg => {
         let initialState = msg.initState;
         renderApp(initialState, )
     }
+    if (msg.name === 'stateChanges') {
+        console.log('Received message in INDEXXXXX page', msg);
+    }
 });
 
 function renderApp(prop) {

@@ -48,6 +48,7 @@ function createPanel() {
                 }
                 else if (_window && msg.stateHasChanged) {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
+                    chrome.runtime.sendMessage({name: 'stateChanges', stateChanges: msg})
                 }
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
