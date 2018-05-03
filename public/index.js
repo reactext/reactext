@@ -3,20 +3,20 @@ import { render } from 'react-dom';
 import App from './App.jsx';
 
 chrome.runtime.onMessage.addListener(msg => {
-    console.log('MESAGGGGGEEE', msg)
+    console.log(msg, '<-- msgggggg');
+    //listens for post Message on port
+
     if (msg.name === 'sendData') {
+        // Received message from devtools.
         console.log('Received message from INDEXXXXXXX page', msg);
-        let initState = msg.initState
-        renderApp(initState)
+        let initialState = msg.initState;
+        renderApp(initialState, )
     }
 });
 
-const renderApp = props => {
+function renderApp(prop) {
     render(
-        <App initState={props} />
+        <App initState={prop} />
         , document.getElementById('container')
     )
 }
-
-console.log(window, 'this is the windowwwwww')
-

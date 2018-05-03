@@ -31,11 +31,6 @@ function createPanel() {
                 let msg;
                 while (msg = data.shift()) {
                     console.log('mssssg in devtoool line 32', msg)
-                    // // _window.test();
-                    _window.respond = function (msg) {
-                        console.log('I rannnn successfullly YAYYYYY!!!!')
-                        port.postMessage(msg)
-                    }
                     chrome.runtime.sendMessage({name: 'sendData', initState: msg});
                 }
             });
@@ -60,17 +55,7 @@ function createPanel() {
                     console.log(data, '<-----data 62')
 
                 }
-                // _window.blahblah = function () {
-                //     console.log('I rannnn successfullly YAYYYYY!!!!')
-                // }
-                // port.postMessage({
-                //     name: 'sendData',
-                //     data: msg,
-                // })
 
-                console.log(data, '<-----data 71');
-
-                // port.postMessage({ name: 'sendData', initState: msg })
             });
 
             port.postMessage({
