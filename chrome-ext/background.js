@@ -13,14 +13,12 @@ chrome.runtime.onConnect.addListener(port => {
     port.onMessage.addListener(msg => {
         // Received message from devtools.
         console.log('post message fired', msg);
-        console.log('port in addListener line 21', port);
+        // console.log('port in addListener line 21', port);
 
 
         //when a devTool is opened, this function adds a tab info to the conections object
         const addActiveTabToConnections = msg => {
             if (msg.name == 'connect' && msg.tabId) {
-                console.log('messssssgg in addActive', msg)
-                console.log('heeeeyeyyyy i in backgrounddddd')
                 connections[msg.tabId] = port;
                 return;
             }
@@ -37,7 +35,6 @@ chrome.runtime.onConnect.addListener(port => {
         let portIds = Object.keys(connections);
         for (let i = 0; i < portIds.length; i++) {
             if (portIds[i] === msg.name) {
-                // if (connections[portIds[i]] == port) {
                 delete connections[portIds[i]];
                 break;
             }
@@ -82,11 +79,22 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
 
                 for (let i = 0; i < prevKeys.length; i++) {
                     let prevStateProps = prev.data[prevKeys[i]].state; // prevStateProps is the state object for the component.
-                    let currStateProps = curr.data[prevKeys[i]].state; // same as prevStateProps but for current state.
+                    let currStateProps;
 
-                    if (prevStateProps !== currStateProps) { // This is filtering out the nulls.
-                        let stateKeys = Object.keys(prevStateProps)
+                    if (!curr.data[prevKeys[i]]) {
+                        console.log('object has been changeddddd - MAYDAY!!!', msg)
+                        chrome.runtime.sendMessage({ name: 'srcCodeChange', initState: msg.data.data });
+                        uniqueStates = []
+                        instances = []
+                        return 'user changed code';
+                    }
+
+                    currStateProps = curr.data[prevKeys[i]].state;  // same as prevStateProps but for current state.
+                    // 
+                    if (prevStateProps !== currStateProps && currStateProps) { // This is filtering out the nulls and components that disappeared
+                        let stateKeys = Object.keys(prevStateProps);
                         for (let j = 0; j < stateKeys.length; j++) {
+
                             if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
                                 let changedComp = prevKeys[i];
                                 objOfChanges[changedComp] = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
@@ -97,7 +105,8 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                 return objOfChanges;
             }
             changesToState = findChanges(prev, curr)
-            if (Object.keys(changesToState).length > 1) {
+            console.log('CHANGESSSS TOOOO STATE', changesToState)
+            if (Object.keys(changesToState).length > 1 && changesToState !== 'user changed code') {
                 sendStateChanges(connections[tabId], changesToState);
                 uniqueStates.push(message)
             }
@@ -105,6 +114,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
         //message object from content_script is stored to state array
         console.log(instances, '<----this instances array is growing')
         console.log('unique', uniqueStates)
+
         if (uniqueStates.length === 0) uniqueStates.push(message);
         instances.push(message);
     };

@@ -30,7 +30,7 @@ function createPanel() {
                 let msg;
                 while (msg = data.shift()) {
                     console.log('mssssg in devtoool line 32', msg)
-                    chrome.runtime.sendMessage({name: 'sendData', initState: msg});
+                    chrome.runtime.sendMessage({name: 'sendData', initState: msg.data});
                 }
             });
 
