@@ -10,29 +10,46 @@ const InitialComp = (props) => {
   let providerLine = [];
   let consumerLine = [];
   let contextLine = [];
-  let testNest = [];
 
   if(objectsInComp.state){
-
+    let tempArr = []
     let stateKeys = Object.keys(objectsInComp.state)
     stateKeys.forEach((x)=>{
-      stateLine.push(<li>{x + " : " + objectsInComp.state[x]}</li>)
+      tempArr.push(<li>{x + " : " + objectsInComp.state[x]}</li>)
     })
-
-    testNest.push(<div>STATE:  <ul>{stateLine}</ul></div>)
+    stateLine.push(<div>STATE:  <ul>{tempArr}</ul></div>)
   }
-  // if(objectsInComp.children){
-  //   childrenLine = [<li>objectsInComp.children</li>]
-  // }
-  // if(objectsInComp.provider){
-  //   providerLine = [<li>objectsInComp.provider</li>]
-  // }
-  // if(objectsInComp.consumer){
-  //   consumerLine = [<li>objectsInComp.consumer</li>]
-  // }
-  // if(objectsInComp.contextValue){
-  //   contextLine = [<li>objectsInComp.contextValue</li>]
-  // }
+  if(objectsInComp.children){
+    let tempArr = []
+    objectsInComp.children.forEach((x,y)=>{
+      tempArr.push(<li>{objectsInComp.children[y]}</li>)
+    })
+    if(tempArr.length === 0){
+      tempArr.push(<li>None</li>)
+    }
+    childrenLine.push(<div>CHILDREN: <ul>{tempArr}</ul></div>)
+  }
+  if(objectsInComp.provider){
+    providerLine.push(<div>PROVIDER: <ul>True</ul></div>)
+    //As of right now, only adds an empty bullet if a provider is present, otherwise, no bullet
+  }
+  if(objectsInComp.consumer){
+    consumerLine.push(<div>CONSUMER: <ul>True</ul></div>)
+        //As of right now, only adds an empty bullet if a consumer is present, otherwise, no bullet
+  }
+  if(objectsInComp.contextValue){
+    console.log("CONTEXT", objectsInComp.contextValue)
+    if(typeof objectsInComp.contextValue === "string"){
+        contextLine.push(<div>CONTEXT: <ul>{objectsInComp.contextValue}</ul></div>)
+    } else {
+        let tempArr = []
+        let contextKeys = Object.keys(objectsInComp.contextValue)
+        contextKeys.forEach((x)=>{
+        tempArr.push(<li>{x + " : " + objectsInComp.contextValue[x]}</li>)
+        })
+        contextLine.push(<div>CONTEXT: <ul>{tempArr}</ul></div>)
+    }
+  }
 
 
 
@@ -65,7 +82,7 @@ const InitialComp = (props) => {
       {linesForPanel}
     </ul> */}
     <ul>
-    {testNest}
+    {stateLine}
     {childrenLine}
     {providerLine}
     {consumerLine}
