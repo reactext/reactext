@@ -97,10 +97,6 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                 return objOfChanges;
             }
             changesToState = findChanges(prev, curr)
-            console.log(changesToState, '<--------------------------this is changing');
-            console.log(connections, 'connections--------->')
-            console.log(connections[tabId], 'connections[tab]---------->')
-            console.log('beffore sendStateChanges changesToState', changesToState);
             if (Object.keys(changesToState).length > 1) {
                 sendStateChanges(connections[tabId], changesToState);
                 uniqueStates.push(message)
