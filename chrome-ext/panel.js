@@ -1,13 +1,8 @@
 function do_something(msg) {
-    // console.log(msg, 'msgg');
-    // console.log(msg.data, 'with data')
-    // console.log(typeof msg.data, 'with data type ')
 
     //Loop over object to add component names to divs
     Object.keys(msg.data).forEach(componentName => {
-        // console.log(msg.data, 'im the base data');
         let value = msg.data[componentName];
-        // console.log(value, 'vallluuuuuuuuueeeeee');
         let title = document.createElement('h2');
         let section = document.createElement('div');
         title.innerText = componentName;
@@ -23,12 +18,6 @@ function do_something(msg) {
         }
         else{
             let subUl = document.createElement('ul');
-            // let stateTag = document.createElement('h5') 
-            // stateTag.innerText = 'State:';
-            // subUl.appendChild(stateTag);
-
-
-
             Object.keys(value[propComp]).forEach(subpromp => {
                 let sublistItem = document.createElement('li');
                 sublistItem.innerText = `${subpromp} : ${value[propComp][subpromp]}`;
@@ -44,49 +33,6 @@ function do_something(msg) {
     document.querySelector('#container').appendChild(section);
     
     });
-
-
-
-
-
-
-
-
-
-    // Object.keys(msg.data).forEach((node) => {
-        // console.log(node,'im the node from panel');
-    //     let stateObj = msg.data[node];
-    //     //make sure we exclude any empty properties
-    //     if (msg.data[node] !== null) {
-    //         let div = document.createElement('div');
-    //         let state = document.createElement('p');
-    //         div.innerHTML = `<h2>${node}</h2>`;
-
-    //         let list = document.createElement('ul');
-
-    //         Object.keys(stateObj).forEach(e => {
-    //             if(typeof stateObj[e] === 'object'){
-    //                 let tempUl = document.createElement('ul');
-    //                 Object.keys(stateObj[e]).forEach((el) => {
-    //                     let tempLi = document.createElement('li');
-    //                     tempLi.innerText = `${stateObj[e]} : ${stateObj[e][el]}`;
-    //                     tempUl.appendChild(tempLi);
-    //                 })
-    //                 listItem.appendChild(tempUl);
-
-    //             }else{
-                    // console.log(e, 'EEEEEEEEE');
-    //                 let listItem = document.createElement('li');
-    //                 listItem.innerText = `${e} : ${stateObj[e]}`;
-    //                 list.appendChild(listItem);
-    //             }
-    //         });
-    //         let container = document.querySelector('#container')
-            // console.log(container, 'container');
-    //         div.appendChild(list);
-    //         document.querySelector('#container').appendChild(div);
-    //     }
-    // });
 }
 
 function do_somethingElse(msg) {
@@ -97,7 +43,6 @@ function do_somethingElse(msg) {
             div2.innerHTML = `<h2>${curr}</h2>`;
             div2.style.color = "green";
             let state = document.createElement('div');
-            // console.log(msg[curr], '<------------CURRRR');
             let obj = msg[curr];
             state.innerHTML =  `${obj.propName} was ${obj.prev} and is now ---> ${obj.curr}`;
             div2.appendChild(state);
