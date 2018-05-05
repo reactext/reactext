@@ -54,6 +54,14 @@ function sendStateChanges(port, msg) {
     port.postMessage(msg);
 }
 
+function sendUpdatedCode(msg) {
+    console.log('object has been changeddddd - MAYDAY SOMETHING DELETED!!!', msg)
+    chrome.runtime.sendMessage({ name: 'srcCodeChange', initState: msg.data.data });
+    uniqueStates = []
+    instances = []
+    return 'user changed code';
+}
+
 //the following API receives a message from the content script
 //a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's has an instance firedstate
 chrome.runtime.onMessage.addListener(function (msg, sender, res) {
@@ -75,33 +83,40 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                 let objOfChanges = { stateHasChanged: true };
 
                 let prevKeys = Object.keys(prev.data);// prev.data is parent obj. prevKeys is component names
-                let currKeys = Object.keys(curr.data); // same as prev.data but for current state
+                const checkObj = Object.assign({}, curr.data); // object used to test if new components exist
 
                 for (let i = 0; i < prevKeys.length; i++) {
                     let prevStateProps = prev.data[prevKeys[i]].state; // prevStateProps is the state object for the component.
                     let currStateProps;
 
-                    if (!curr.data[prevKeys[i]]) {
-                        console.log('object has been changeddddd - MAYDAY!!!', msg)
-                        chrome.runtime.sendMessage({ name: 'srcCodeChange', initState: msg.data.data });
-                        uniqueStates = []
-                        instances = []
-                        return 'user changed code';
-                    }
+                    if (!curr.data[prevKeys[i]]) return sendUpdatedCode(msg);
 
-                    currStateProps = curr.data[prevKeys[i]].state;  // same as prevStateProps but for current state.
-                    // 
-                    if (prevStateProps !== currStateProps && currStateProps) { // This is filtering out the nulls and components that disappeared
-                        let stateKeys = Object.keys(prevStateProps);
-                        for (let j = 0; j < stateKeys.length; j++) {
-
-                            if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
-                                let changedComp = prevKeys[i];
-                                objOfChanges[changedComp] = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
+                    if (curr.data[prevKeys[i]]) {
+                        currStateProps = curr.data[prevKeys[i]].state;  // same as prevStateProps but for current state.
+                        console.log('currSP', currStateProps)
+                        console.log('prevSP', prevStateProps)
+                        if (prevStateProps !== currStateProps) { // This is filtering out the nulls and components that disappeared
+                            let stateKeys = Object.keys(prevStateProps);
+                            for (let j = 0; j < stateKeys.length; j++) {
+                                if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
+                                    let changedComp = prevKeys[i];
+                                    objOfChanges[changedComp] = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
+                                }
                             }
                         }
                     }
+
+                    if (checkObj[prevKeys[i]]) {
+                        delete checkObj[prevKeys[i]];
+                    };
+
                 }
+
+                if (Object.keys(checkObj).length > 0) {
+                    console.log('object has been changeddddd - MAYDAY SOMETHING ADDED!!!', checkObj)
+                    return sendUpdatedCode(msg)
+                }
+
                 return objOfChanges;
             }
             changesToState = findChanges(prev, curr)
