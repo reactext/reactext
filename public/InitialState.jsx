@@ -12,10 +12,9 @@ class InitialState extends Component {
     let stateObj = this.props.initialState;
     let comp = Object.entries(stateObj);
     for (let i = 0; i < comp.length; i++) {
-      //take out h3, img, div, etc from intitial state
-      if (comp[i][1].state !== null || comp[i][1].children.length > 0) {
+      // //take out h3, img, div, etc from intitial state
+      // if (comp[i][1].state !== null || comp[i][1].children.length > 0) {
         initialStateComp.push(<InitialComp key={i} compInfo={comp[i]} />)
-      }
     }
     return (
       <div className='initialState'>{initialStateComp}</div>
