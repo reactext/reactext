@@ -68,6 +68,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
     console.log('inputs in background.js line 61 chrome runtime listener', 'msg:', msg, sender, res)
     // validate we are listening for the correct msg
     if (msg.from === 'content_script') {
+        console.log(msg.data, 'im the msg.data'); 
 
         let tabId = sender.tab.id;
 
