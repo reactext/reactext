@@ -197,6 +197,7 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
   }
   if (state[0].name.$$typeof) {
     if (state[0].name.$$typeof.toString() === 'Symbol(react.provider)') {
+
       // do something
       // add proper stuff to the pageSetup
       pageSetup[componentName].provider = true;
@@ -234,11 +235,16 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
         }
       });
       pageSetup[componentName].Active_Provider = trackerId;
+      
     }
   }
-  // does children array have any objects?
-  if (state[0].children.length > 0) {
-    // if so PCD(children array)
-    providerConsumerData(state[0].children, componentName, providerSymbols);
-  }
+
+    // does children array have any objects?
+    if (state[0].children.length > 0) {
+      // if so PCD(children array)
+      providerConsumerData(state[0].children, componentName, providerSymbols);
+    }
+    
 }
+
+console.log(pageSetup, 'im the page set up'); 
