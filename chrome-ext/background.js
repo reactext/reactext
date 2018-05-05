@@ -1,7 +1,9 @@
 let connections = {};
 
-//this is an array of objects that hold the tab's new state
-let state = [];
+//this is an array of objects that hold the tab's new instance
+let instances = [];
+//this is an array of objects that hold all unique states 
+let uniqueStates = [];
 let changesToState;
 
 //This listens for a chrom.runtime.onConnect to be fired
@@ -9,17 +11,25 @@ chrome.runtime.onConnect.addListener(port => {
 
     //listens for post Message on port (i.e. devtools.js)
     port.onMessage.addListener(msg => {
-        // Received message from devtools. Do something:
+        // Received message from devtools.
+        console.log('post message fired', msg);
+        console.log('port in addListener line 21', port);
+
 
         //when a devTool is opened, this function adds a tab info to the conections object
         const addActiveTabToConnections = msg => {
             if (msg.name == 'connect' && msg.tabId) {
+                console.log('messssssgg in addActive', msg)
+                console.log('heeeeyeyyyy i in backgrounddddd')
                 connections[msg.tabId] = port;
                 return;
             }
         }
-
-        addActiveTabToConnections(msg);
+        if (!connections[msg.tabId]) {
+            addActiveTabToConnections(msg)
+        } else {
+            console.log('already logged')
+        }
     });
 
     port.onDisconnect.addListener(msg => {
@@ -34,8 +44,7 @@ chrome.runtime.onConnect.addListener(port => {
         }
     });
 
-    notifyDevtools(port, state[state.length - 1]);
-
+    notifyDevtools(port, uniqueStates[uniqueStates.length - 1]);
 
 });
 
@@ -49,17 +58,21 @@ function sendStateChanges(port, msg) {
 }
 
 //the following API receives a message from the content script
-//a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's state changes
+//a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's has an instance firedstate
 chrome.runtime.onMessage.addListener(function (msg, sender, res) {
-    let tabId = sender.tab.id;
+    console.log('inputs in background.js line 61 chrome runtime listener', 'msg:', msg, sender, res)
     // validate we are listening for the correct msg
     if (msg.from === 'content_script') {
-        message = msg.data;
-        //compare state changes
-        if (state.length > 0) {
-            let prev = state[state.length - 1];
-            let curr = message;
+        console.log(msg.data, 'im the msg.data'); 
 
+        let tabId = sender.tab.id;
+
+        message = msg.data;
+
+        //compare instances changes
+        if (uniqueStates.length > 0) {
+            let prev = uniqueStates[uniqueStates.length - 1];
+            let curr = message;
 
             const findChanges = (prev, curr) => {
 
@@ -85,9 +98,19 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                 return objOfChanges;
             }
             changesToState = findChanges(prev, curr)
-        };
+            console.log(changesToState, '<--------------------------this is changing');
+            console.log(connections, 'connections--------->')
+            console.log(connections[tabId], 'connections[tab]---------->')
+            console.log('beffore sendStateChanges changesToState', changesToState);
+            if (Object.keys(changesToState).length > 1) {
+                sendStateChanges(connections[tabId], changesToState);
+                uniqueStates.push(message)
+            }
+        }
         //message object from content_script is stored to state array
-        state.push(message);
-    }
-    sendStateChanges(connections[tabId], changesToState);
+        console.log(instances, '<----this instances array is growing')
+        console.log('unique', uniqueStates)
+        if (uniqueStates.length === 0) uniqueStates.push(message);
+        instances.push(message);
+    };
 });
