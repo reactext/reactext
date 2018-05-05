@@ -10,7 +10,7 @@ let currNestedState;
 stateSet.forEach((e) => {
     firstStatePull = e;
 });
-// console.log('ORIGINAL DATA TO WORK WITH ', firstStatePull);
+console.log('ORIGINAL DATA TO WORK WITH ', firstStatePull);
 ////////////////
 ///functions////
 ////////////////
@@ -102,7 +102,7 @@ const organizeState = (state, providerSymbols = []) => {
                 while (tempChild){
                     tempChild.children.forEach(obj => {
                         // if need more data for tree do below
-                        if (typeof obj.name === 'string' && obj.name !== 'div' && obj.name !== 'img' && obj.name !== 'h1' && obj.name !== 'h3' && obj.name !== '') { 
+                        if (typeof obj.name === 'string' && obj.name !== 'div' && obj.name !== 'img' && obj.name !== 'h1' && obj.name !== 'h3' && obj.name !== '') {
                         pageSetup[child.name].children.push(obj.name);
                         }
                     })
