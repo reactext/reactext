@@ -58,12 +58,9 @@ function sendStateChanges(port, msg) {
     port.postMessage(msg);
 }
 
-function sendUpdatedCode(msg) {
+function sendAddedComp(msg) {
     console.log('object has been changeddddd - MAYDAY SOMETHING DELETED!!!', msg)
-    chrome.runtime.sendMessage({ name: 'srcCodeChange', initState: msg.data.data });
-    uniqueStates = []
-    instances = []
-    return 'user changed code';
+    // chrome.runtime.sendMessage({ name: 'compAdded', initState: msg.data.data });
 }
 
 //the following API receives a message from the content script
@@ -95,7 +92,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                     let currStateProps;
 
                     //INCORRECT
-                    if (!curr.data[prevKeys[i]]) return sendUpdatedCode(msg);
+                    // if (!curr.data[prevKeys[i]]) return sendUpdatedCode(msg);
 
                     if (curr.data[prevKeys[i]]) {
                         currStateProps = curr.data[prevKeys[i]].state;  // same as prevStateProps but for current state.
@@ -106,14 +103,14 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                             console.log('STATEKEYSS', stateKeys)
                             for (let j = 0; j < stateKeys.length; j++) {
                                 if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
-                                    
+
                                     let changedComp = prevKeys[i];
                                     let change = [stateKeys[j], prevStateProps[stateKeys[j]], currStateProps[stateKeys[j]]]
                                     console.log('changedComp, ')
                                     if (objOfChanges[changedComp]) {
                                         objOfChanges[changedComp].push(change)
                                     } else {
-                                    objOfChanges[changedComp] = [change];
+                                        objOfChanges[changedComp] = [change];
                                     }
                                 }
                             }
@@ -126,24 +123,24 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                 }
 
                 if (Object.keys(checkObj).length > 0) {
-                    console.log('object has been changeddddd - MAYDAY SOMETHING ADDED!!!', checkObj)
-                    return sendUpdatedCode(msg)
+                    console.log('object has been changeddddd - SOMETHING ADDED!!!', checkObj)
+                    sendAddedComp(msg)
                 }
                 return objOfChanges;
             }
 
             changesToState = findChanges(prev, curr)
             console.log('CHANGESSSS TOOOO STATE', changesToState)
-            if (Object.keys(changesToState).length > 1 && changesToState !== 'user changed code') {
+            if (Object.keys(changesToState).length > 1) {
                 sendStateChanges(connections[tabId], changesToState);
                 uniqueStates.push(message)
             }
         }
+        if (uniqueStates.length === 0) uniqueStates.push(message);
+        instances.push(message);
+
         //message object from content_script is stored to state array
         console.log(instances, '<----this instances array is growing')
         console.log('unique', uniqueStates)
-
-        if (uniqueStates.length === 0) uniqueStates.push(message);
-        instances.push(message);
     };
 });
