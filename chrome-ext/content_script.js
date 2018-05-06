@@ -12,8 +12,6 @@ injectScript(chrome.runtime.getURL('/hook.js'), 'body');
 
 //ADD an eventListener that listens for Reactext event from hook.js and has a callback that sends a message to background.js
 window.addEventListener("ReacText", (message) => {
-  //message coming in well here.
-  console.log(message, 'im the message'); 
   let state = message.detail;
   chrome.runtime.sendMessage({ data: state, from: 'content_script'});
 }, false);
@@ -23,5 +21,5 @@ window.addEventListener("beforeunload", function (e) {
   chrome.runtime.sendMessage({ name: 'srcCodeChanged', from: 'content_script'});
   // var confirmationMessage = "\o/";
   // e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
-  // return confirmationMessage;              // Gecko, WebKit, Chrome <34
+  // return 'hiiii';              // Gecko, WebKit, Chrome <34
 });

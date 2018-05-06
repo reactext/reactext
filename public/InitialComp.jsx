@@ -38,7 +38,6 @@ const InitialComp = (props) => {
     //As of right now, only adds an empty bullet if a consumer is present, otherwise, no bullet
   }
   if (objectsInComp.contextValue) {
-    console.log("CONTEXT", objectsInComp.contextValue)
     if (typeof objectsInComp.contextValue === "string") {
       contextLine.push(<div>CONTEXT: <ul>{objectsInComp.contextValue}</ul></div>)
     } else {

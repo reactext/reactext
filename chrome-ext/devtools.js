@@ -36,6 +36,7 @@ function createPanel() {
 
             port.onMessage.addListener(msg => {
                 console.log('immmm in the port on Messaage line 40', msg);
+
                 // Write information to the panel, if exists.
                 // If panel does not exist (yet), the data will be queued.
                 console.log('windowwww from the devtools', window);
@@ -43,6 +44,7 @@ function createPanel() {
 
                 if (_window && msg.data) {
                     console.log('went inside line 51')
+                    chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
                 }
                 else if (_window && msg.stateHasChanged) {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
@@ -54,6 +56,7 @@ function createPanel() {
                     console.log(data, '<-----data 62')
 
                 }
+
             });
 
             port.postMessage({

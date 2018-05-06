@@ -5,7 +5,6 @@ const StateChangeEl = props => {
   let entries = Object.entries(props.stateInfo);
   let changes = [];
   for (let i = 0; i < entries.length; i++) {
-    console.log(entries, "ENTRIES in SC El display second");
     changes.push(
       <li key={i}>
         <span>{entries[i][0]}</span>
