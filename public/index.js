@@ -5,12 +5,14 @@ import App from './App.jsx';
 let initialState;
 let stateChanges = [];
 
+console.log(window, "winnnsooooq inf indexxx");
+
 chrome.runtime.onMessage.addListener(msg => {
     console.log(msg, '<-- msgggggg');
     //listens for post Message on port
     console.log('INSIDEEEEEE STATE CHANGE 12 here is initialState', initialState)
 
-    if (msg.name === 'sendData' || msg.name ==='srcCodeChange') {
+    if (msg.name === 'sendData') {
         // Received message from devtools.
         console.log('Received message from INDEXXXXXXX page', msg);
         initialState = msg.initState;
@@ -22,6 +24,14 @@ chrome.runtime.onMessage.addListener(msg => {
         //delete stateHasChanged property in msg.stateChanges
         delete msg.stateChanges.stateHasChanged;
         stateChanges.push(msg.stateChanges);
+        renderApp(initialState, stateChanges)
+    }
+    if (msg.name ==='srcCodeChanged') {
+        // Received message from devtools.
+        console.log('Received message from INDEXXXXXXX page', msg);
+        alert('srcCodeChanged')
+        initialState = msg.initState;
+        stateChanges = [];
         renderApp(initialState, stateChanges)
     }
 });

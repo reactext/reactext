@@ -20,7 +20,7 @@ function createPanel() {
                 console.log('immmm in the extension panel on shown', panelWindow);
 
                 extensionPanel.onShown.removeListener(tmp); // Run once only
-                
+
                 _window = panelWindow;
                 console.log('immmm the __window variable  line 2666666', _window);
 
@@ -30,13 +30,12 @@ function createPanel() {
                 let msg;
                 while (msg = data.shift()) {
                     console.log('mssssg in devtoool line 32', msg)
-                    chrome.runtime.sendMessage({name: 'sendData', initState: msg.data});
+                    chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
                 }
             });
 
             port.onMessage.addListener(msg => {
                 console.log('immmm in the port on Messaage line 40', msg);
-
                 // Write information to the panel, if exists.
                 // If panel does not exist (yet), the data will be queued.
                 console.log('windowwww from the devtools', window);
@@ -47,7 +46,7 @@ function createPanel() {
                 }
                 else if (_window && msg.stateHasChanged) {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
-                    chrome.runtime.sendMessage({name: 'stateChanges', stateChanges: msg})
+                    chrome.runtime.sendMessage({ name: 'stateChanges', stateChanges: msg })
                 }
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
@@ -55,7 +54,6 @@ function createPanel() {
                     console.log(data, '<-----data 62')
 
                 }
-
             });
 
             port.postMessage({

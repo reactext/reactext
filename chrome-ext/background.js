@@ -24,10 +24,14 @@ chrome.runtime.onConnect.addListener(port => {
             }
         }
         if (!connections[msg.tabId]) {
-            addActiveTabToConnections(msg)
+            addActiveTabToConnections(msg);
+
         } else {
             console.log('already logged')
         }
+
+        console.log(port, 'PORRRRRRRRRRRRT')
+
     });
 
     port.onDisconnect.addListener(msg => {
@@ -68,7 +72,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
     console.log('inputs in background.js line 61 chrome runtime listener', 'msg:', msg, sender, res)
     // validate we are listening for the correct msg
     if (msg.from === 'content_script') {
-        console.log(msg.data, 'im the msg.data'); 
+        console.log(msg.data, 'im the msg.data');
 
         let tabId = sender.tab.id;
 
@@ -90,6 +94,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                     let prevStateProps = prev.data[prevKeys[i]].state; // prevStateProps is the state object for the component.
                     let currStateProps;
 
+                    //INCORRECT
                     if (!curr.data[prevKeys[i]]) return sendUpdatedCode(msg);
 
                     if (curr.data[prevKeys[i]]) {
@@ -98,10 +103,18 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                         console.log('prevSP', prevStateProps)
                         if (prevStateProps !== currStateProps) { // This is filtering out the nulls and components that disappeared
                             let stateKeys = Object.keys(prevStateProps);
+                            console.log('STATEKEYSS', stateKeys)
                             for (let j = 0; j < stateKeys.length; j++) {
                                 if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
+                                    
                                     let changedComp = prevKeys[i];
-                                    objOfChanges[changedComp] = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
+                                    let change = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
+                                    console.log('changedComp, ')
+                                    if (objOfChanges[changedComp]) {
+                                        objOfChanges[changedComp].push(change)
+                                    } else {
+                                    objOfChanges[changedComp] = [change];
+                                    }
                                 }
                             }
                         }
@@ -110,16 +123,15 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                     if (checkObj[prevKeys[i]]) {
                         delete checkObj[prevKeys[i]];
                     };
-
                 }
 
                 if (Object.keys(checkObj).length > 0) {
                     console.log('object has been changeddddd - MAYDAY SOMETHING ADDED!!!', checkObj)
                     return sendUpdatedCode(msg)
                 }
-
                 return objOfChanges;
             }
+
             changesToState = findChanges(prev, curr)
             console.log('CHANGESSSS TOOOO STATE', changesToState)
             if (Object.keys(changesToState).length > 1 && changesToState !== 'user changed code') {
