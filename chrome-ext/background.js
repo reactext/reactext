@@ -108,7 +108,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
                                 if (prevStateProps[stateKeys[j]] !== currStateProps[stateKeys[j]]) {
                                     
                                     let changedComp = prevKeys[i];
-                                    let change = { propName: stateKeys[j], prev: prevStateProps[stateKeys[j]], curr: currStateProps[stateKeys[j]] }
+                                    let change = [stateKeys[j], prevStateProps[stateKeys[j]], currStateProps[stateKeys[j]]]
                                     console.log('changedComp, ')
                                     if (objOfChanges[changedComp]) {
                                         objOfChanges[changedComp].push(change)

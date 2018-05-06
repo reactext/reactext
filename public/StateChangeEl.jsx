@@ -9,12 +9,7 @@ const StateChangeEl = props => {
     changes.push(
       <li key={i}>
         <span>{entries[i][0]}</span>
-        <br /><ul>{entries[i][1].map((e, idx) => {
-          let values = Object.values(e)
-          console.log(values, '<---values')
-          return (
-            <li key={idx}>{values[0]}: prev: {JSON.stringify(values[1])} curr:{JSON.stringify(values[2])}</li>)
-        })}</ul>
+        <br /><ul>{entries[i][1].map((el, idx) => <li key={idx}>{e[0]}: prev: {JSON.stringify(e[1])} curr:{JSON.stringify(e[2])}</li>)}</ul>
       </li>
     )
   }
