@@ -8,7 +8,6 @@ console.log(window, "winnnsooooq inf indexxx");
 
 if (window.a) console.log('hieghiehwgiehgie', window.a());
 
-
 chrome.runtime.onMessage.addListener(msg => {
     console.log(msg, '<-- msgggggg');
 
