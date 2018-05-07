@@ -17,6 +17,8 @@ chrome.runtime.onConnect.addListener(port => {
         if (msg.name == 'connectBackAndDev') {
             console.log('making connection');
             connections[msg.tabId] = port;
+            console.log('making connection, after', connections);
+
         }
         if (uniqueStates.length > 0) {
             let firstState = uniqueStates.slice().shift();
@@ -112,7 +114,7 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
             instances = [];
             uniqueStates = [];
             reload = false;
-            notifyDevtools(connections[tabId], message);
+            notifyDevtools(tabId, message);
         }
 
         //compare instances changes
