@@ -14,6 +14,7 @@ chrome.runtime.onConnect.addListener(port => {
             console.log('making connection');
             connections[msg.tabId] = {};
             connections[msg.tabId].port = port;
+            console.log(tempState, '<----- temp state in onConnect before assignment ')
             connections[msg.tabId].uniqueStates = tempState;
             connections[msg.tabId].reload = false;
             connections[msg.tabId].changesToState = [];
@@ -21,12 +22,14 @@ chrome.runtime.onConnect.addListener(port => {
             connections[msg.tabId].instances = [];
 
             tempState = [];
+            console.log(tempState, '<----- temp state in onConnect')
             console.log('making connection, after', connections);
         }
         if (connections[msg.tabId].uniqueStates.length > 0) {
             let firstState = connections[msg.tabId].uniqueStates.slice().shift();
             notifyDevtools(connections[msg.tabId].port, firstState)
         }
+        console.log(tempState, '<----- temp state in onConnect line 32')
     }
 
     //listens for port.sendMessage
@@ -132,7 +135,12 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
                 if (Object.keys(newChanges).length > 1) {
                     connections[tabId].changesToState.push(newChanges);
                     console.log('connections[tabId].changesToState', connections[tabId].changesToState)
-                    notifyDevtools(connections[tabId].port, connections[tabId].changesToState);
+                    let changedMsg = {
+                        name: 'stateHasChanged',
+                        init: connections[tabId].uniqueStates[0].data,
+                        changes: connections[tabId].changesToState,
+                    }
+                    notifyDevtools(connections[tabId].port, changedMsg);
                     connections[tabId].uniqueStates.push(message)
                 }
             }
@@ -148,5 +156,4 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
         connections[sender.tab.id].reload = true;
         console.log('insdeeeeee 148 background, src code Changed', connections[sender.tab.id].reload)
     }
-    return true;
 });

@@ -14,7 +14,7 @@ function createPanel() {
             let portId = JSON.stringify(chrome.devtools.inspectedWindow.tabId);
 
             //connect to background.js with connect method, pass in object with name property
-            let backgroundConnection = chrome.runtime.connect({ name: 'devtool'});
+            let backgroundConnection = chrome.runtime.connect({ name: 'devtool' });
 
             backgroundConnection.postMessage({
                 name: 'connectBackAndDev',
@@ -22,23 +22,29 @@ function createPanel() {
             });
 
             backgroundConnection.onMessage.addListener(msg => {
-                console.log('immmm in the devtools on Messaage line 40', msg);
+                console.log('immmm in the devtools port.onMessage line 25', msg);
                 console.log('windowwww from the devtools', window);
 
                 // Write information to the panel, if exists.
                 // If panel does not exist (yet), the data will be queued.
-                if (_window && msg.data) {
-                    console.log('went inside line 51')
-                    chrome.runtime.sendMessage({ name: 'sendUpdate', initState: msg.data });
-                }
-                else if (_window && msg[0].stateHasChanged ) {
+                // if (_window && msg.data) {
+
+                if (_window && msg.name === 'stateHasChanged') {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
-                    chrome.runtime.sendMessage({ name: 'stateChanges', stateChanges: msg, initState: init.data })
+                    _window.renderFunc(msg.init, msg.changes, [])
+                    // chrome.runtime.sendMessage({ name: 'stateChanges', stateChanges: msg, initState: init.data })
+                }
+
+                if (_window) {
+                    console.log('went inside line 51', _window)
+                    // init = msg.data;
+                    // _window.renderApp(init, [], [])
+                    // chrome.runtime.sendMessage({ name: 'sendUpdate', initState: msg.data });
                 }
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
                     data.push(msg);
-                    init = msg;
+                    // init = msg;
                 }
             });
 
@@ -49,16 +55,18 @@ function createPanel() {
                 extensionPanel.onShown.removeListener(tmp); // Run once only
 
                 _window = panelWindow;
-                console.log('immmm the __window variable  line 2666666', _window);
+                console.log('immmm the __window variable  line 544', _window);
                 // Release queued data
                 let msg;
                 while (msg = data.shift()) {
                     console.log('mssssg in devtoool line 32', msg)
-                    chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
+                    console.log('immmm the __window variable  line 59', _window);
+                    // chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
+                    _window.renderFunc(msg.data, [], []);
                 }
-                _window.a = () => {
-                    console.log('hiiii there')
-                }
+                // _window.respond = function(msg) {
+                //     port.postMessage(msg)
+                // }
             });
         });
 };
