@@ -7,6 +7,8 @@ let firstStatePull;
 let changes;
 let currNestedState;
 
+
+
 stateSet.forEach((e) => {
   firstStatePull = e;
 });
@@ -15,6 +17,7 @@ stateSet.forEach((e) => {
 // //////////////
 const checkReactDOM = (reactDOM) => {
   // current state will be an array of all the caches.
+  // console.log(reactDOM.current, 'im the reactDOM.current...');
   const data = {
     currentState: null,
 
@@ -23,6 +26,8 @@ const checkReactDOM = (reactDOM) => {
   const cache = [];
 
   if (reactDOM) {
+    console.log(reactDOM.current, 'hopefully this doesnt kill the computer!!!');
+    console.log(typeof reactDOM.current, 'hopefully this doesnt kill the computer!!!');
     traverseAndGatherReactDOM(reactDOM.current, cache);
   } else {
     return;
@@ -35,6 +40,7 @@ const checkReactDOM = (reactDOM) => {
 
 // /////////////////////////////////////
 const traverseAndGatherReactDOM = (node, cache) => {
+  // console.log('im the node: ', node);
   const component = {
     id: null,
     name: 'dont add me',
@@ -115,7 +121,7 @@ const organizeState = (state) => {
   });
 };
 
-console.log(pageSetup, '<=========  THIS IS THE PAGESETUP OBJECT BEFORE THE providerConsumerData() FUNCITON GET CALLED')
+// console.log(pageSetup, '<=========  THIS IS THE PAGESETUP OBJECT BEFORE THE providerConsumerData() FUNCITON GET CALLED')
 
 
 // ///////////////////////////////////////////////
@@ -147,7 +153,7 @@ const transmitData = (state) => {
 
 const nestedState = checkReactDOM(firstStatePull.current.stateNode);
 organizeState(nestedState.currentState[0].children);
-console.log(nestedState.currentState[0].children, '<===============look in here for the original nested object!!!')
+// console.log(nestedState.currentState[0].children, '<===============look in here for the original nested object!!!')
 providerConsumerData(nestedState.currentState[0].children);
 transmitData(pageSetup);
 
