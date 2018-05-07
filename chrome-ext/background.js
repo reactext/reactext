@@ -10,64 +10,46 @@ let reload = false;
 //This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(port => {
 
-    //listens for post Message on port (i.e. devtools.js)
-    port.onMessage.addListener(msg => {
-        // Received message from devtools.
-        console.log('post message fired', msg);
-        // console.log('port in addListener line 21', port);
-
+    const extensionListener = (msg, sender, res) => {
+        console.log('extension listener in background fired', msg);
 
         //when a devTool is opened, this function adds a tab info to the conections object
-        const addActiveTabToConnections = msg => {
-            if (msg.name == 'connect' && msg.tabId) {
-                connections[msg.tabId] = port;
-                return;
-            }
+        if (msg.name == 'connectBackAndDev') {
+            console.log('making connection');
+            connections[msg.tabId] = port;
         }
-        if (!connections[msg.tabId]) {
-            addActiveTabToConnections(msg);
-
-        } else {
-            console.log('already logged')
+        if (uniqueStates.length > 0) {
+            let firstState = uniqueStates.slice().shift();
+            notifyDevtools(connections[msg.tabId], firstState)
         }
+    }
 
-        console.log(port, 'PORRRRRRRRRRRRT')
-
-    });
+    //listens for port.sendMessage
+    port.onMessage.addListener(extensionListener);
 
     port.onDisconnect.addListener(msg => {
+
+        port.onMessage.removeListener(extensionListener);
         //loop through connections object and find delete disconnected tab
-        let portIds = Object.keys(connections);
-        for (let i = 0; i < portIds.length; i++) {
-            if (portIds[i] === msg.name) {
-                delete connections[portIds[i]];
+        let tabs = Object.keys(connections);
+        for (let i = 0; i < tabs.length; i++) {
+            if (connections[tabs[i]] == port) {
+                delete connections[tabs[i]];
                 break;
             }
         }
     });
-
-    notifyDevtools(port, uniqueStates[uniqueStates.length - 1]);
-
 });
 
 // Function to send a message to specific port:
-function notifyDevtools(port, msg) {
+const notifyDevtools = (port, msg) => {
     port.postMessage(msg);
 }
 
-function sendStateChanges(port, msg) {
-    port.postMessage(msg);
-}
-
-function sendAddedComp(msg) {
-    console.log('object has been changeddddd - MAYDAY SOMETHING DELETED!!!', msg)
-    // chrome.runtime.sendMessage({ name: 'compAdded', initState: msg.data.data });
-}
-
-function reloadSrcCode(port, msg) {
-    console.log('sending newSrc Code!', msg)
-    port.postMessage(msg);
-}
+// function sendAddedComp(msg) {
+//     console.log('object has been changeddddd - MAYDAY SOMETHING DELETED!!!', msg)
+//     // chrome.runtime.sendMessage({ name: 'compAdded', initState: msg.data.data });
+// }
 
 const findChanges = (prev, curr) => {
 
@@ -80,7 +62,6 @@ const findChanges = (prev, curr) => {
         let prevStateProps = prev.data[prevKeys[i]].state; // prevStateProps is the state object for the component.
         let currStateProps;
 
-        //INCORRECT
         // if (!curr.data[prevKeys[i]]) return sendUpdatedCode(msg);
 
         if (curr.data[prevKeys[i]]) {
@@ -118,41 +99,33 @@ const findChanges = (prev, curr) => {
 
 //the following API receives a message from the content script
 //a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's has an instance firedstate
-chrome.runtime.onMessage.addListener(function (msg, sender, res) {
-    console.log('inputs in background.js line 61 chrome runtime listener', 'msg:', msg, sender, res)
-
-    console.log('reload', reload)
+chrome.runtime.onMessage.addListener((msg, sender, res) => {
+    console.log('messagessss coming into background', msg, sender, res)
     // validate we are listening for the correct msg
-
     if (msg.from === 'content_script' && msg.data) {
-        console.log(msg.data, 'im the msg.data');
+        message = msg.data;
 
         let tabId = sender.tab.id;
-
-        message = msg.data;
 
         if (reload) {
             //reset all instances, uniqueStates, and changesToState on reload
             instances = [];
             uniqueStates = [];
-            changesToState = null;
             reload = false;
-            console.log(instances, 'instances', uniqueStates, '<--uniq States', changesToState, '<----changes to state')
-            reloadSrcCode(connections[tabId], message);
+            notifyDevtools(connections[tabId], message);
         }
 
         //compare instances changes
         if (uniqueStates.length > 0) {
             let prev = uniqueStates[uniqueStates.length - 1];
             let curr = message;
-
             changesToState = findChanges(prev, curr)
-            console.log('CHANGESSSS TOOOO STATE', changesToState)
             if (Object.keys(changesToState).length > 1) {
-                sendStateChanges(connections[tabId], changesToState);
+                notifyDevtools(connections[tabId], changesToState);
                 uniqueStates.push(message)
             }
         }
+
         if (uniqueStates.length === 0) uniqueStates.push(message);
         instances.push(message);
 
@@ -160,8 +133,10 @@ chrome.runtime.onMessage.addListener(function (msg, sender, res) {
         console.log(instances, '<----this instances array is growing')
         console.log('unique', uniqueStates)
     };
+
     if (msg.from === 'content_script' && msg.name === 'srcCodeChanged') {
         reload = true;
         console.log('insdeeeeee 148 background, src code Changed', reload)
     }
+    return true;
 });

@@ -10,37 +10,41 @@ console.log(window, "winnnsooooq inf indexxx");
 
 chrome.runtime.onMessage.addListener(msg => {
     console.log(msg, '<-- msgggggg');
-    //listens for post Message on port
-    // console.log('INSIDEEEEEE STATE CHANGE 12 here is initialState', initialState)
+    console.log(initialState, 'IS');
+    console.log(stateChanges, 'SC');
 
     if (msg.name === 'sendData') {
         // Received message from devtools.
         console.log('Received message from INDEXXXXXXX page', msg);
         initialState = msg.initState;
-        stateChanges = [];
+        // stateChanges = [];
+        console.log('state changesss line 26', stateChanges);
         renderApp(initialState, stateChanges, modState)
     }
-    if (msg.name === 'stateChanges') {
+    else if (msg.name === 'stateChanges') {
         console.log('Received message in INDEXXXXX MSG === stateChanges page', msg.stateChanges);
         //delete stateHasChanged property in msg.stateChanges
         delete msg.stateChanges.stateHasChanged;
         stateChanges.push(msg.stateChanges);
+        console.log('state changesse line 35', stateChanges);
         renderApp(initialState, stateChanges, modState)
     }
-    if (msg.name ==='compAdded') {
+    else if (msg.name ==='compAdded') {
         // Received message from background.
         console.log('Received message from INDEXXXXXXX page 31', msg);
         modState = msg.initState;
+        console.log('state changesss line 42', stateChanges);
         renderApp(initialState, stateChanges, modState)
     }
-
-    // if (msg.from === 'srcCodeChanged') {
-    //     // Received message from devtools.
-    //     console.log('Received message from INDEXXXXXXX page', msg);
-    //     initialState = msg.data.data;
-    //     stateChanges = [];
-    //     renderApp(initialState, stateChanges, modState)
-    // }
+    else if (msg.name === 'sendUpdate') {
+        // Received message from devtools.
+        console.log('Received message from INDEXXXXXXX page', msg);
+        initialState = msg.initState;
+        console.log(stateChanges)
+        stateChanges = [];
+        console.log('state changesss line 51', stateChanges);
+        renderApp(initialState, stateChanges, modState)
+    }
 });
 
 function renderApp(prop1, prop2, prop3) {

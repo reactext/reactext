@@ -12,8 +12,32 @@ function createPanel() {
             let portId = JSON.stringify(chrome.devtools.inspectedWindow.tabId);
 
             //connect to background.js with connect method, pass in object with name property
-            let port = chrome.runtime.connect({ name: portId });
+            let backgroundConnection = chrome.runtime.connect({ name: 'devtool'});
 
+            backgroundConnection.postMessage({
+                name: 'connectBackAndDev',
+                tabId: chrome.devtools.inspectedWindow.tabId,
+            });
+
+            backgroundConnection.onMessage.addListener(msg => {
+                console.log('immmm in the devtools on Messaage line 40', msg);
+                console.log('windowwww from the devtools', window);
+
+                // Write information to the panel, if exists.
+                // If panel does not exist (yet), the data will be queued.
+                if (_window && msg.data) {
+                    console.log('went inside line 51')
+                    chrome.runtime.sendMessage({ name: 'sendUpdate', initState: msg.data });
+                }
+                else if (_window && msg.stateHasChanged) {
+                    console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
+                    chrome.runtime.sendMessage({ name: 'stateChanges', stateChanges: msg })
+                }
+                else {
+                    console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
+                    data.push(msg);
+                }
+            });
 
             //show extension panel
             extensionPanel.onShown.addListener(function tmp(panelWindow) {
@@ -23,46 +47,13 @@ function createPanel() {
 
                 _window = panelWindow;
                 console.log('immmm the __window variable  line 2666666', _window);
-
                 // Release queued data
-                console.log('data in devtoool line 31', data)
-
                 let msg;
                 while (msg = data.shift()) {
                     console.log('mssssg in devtoool line 32', msg)
                     chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
                 }
             });
-
-            port.onMessage.addListener(msg => {
-                console.log('immmm in the port on Messaage line 40', msg);
-
-                // Write information to the panel, if exists.
-                // If panel does not exist (yet), the data will be queued.
-                console.log('windowwww from the devtools', window);
-                console.log('_________WINDOW from the devtools', _window);
-
-                if (_window && msg.data) {
-                    console.log('went inside line 51')
-                    chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
-                }
-                else if (_window && msg.stateHasChanged) {
-                    console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
-                    chrome.runtime.sendMessage({ name: 'stateChanges', stateChanges: msg })
-                }
-                else {
-                    console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
-                    data.push(msg);
-                    console.log(data, '<-----data 62')
-
-                }
-
-            });
-
-            port.postMessage({
-                name: 'connect',
-                tabId: chrome.devtools.inspectedWindow.tabId,
-            })
         });
 };
 
