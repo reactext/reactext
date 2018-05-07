@@ -133,7 +133,16 @@ function stringifyData(obj) {
 }
 
 const transmitData = (state) => {
-  const customEvent = new CustomEvent('ReacText', {
+  const customEvent = new CustomEvent('Reactext', {
+    detail: {
+      data: stringifyData(state),
+    },
+  });
+  window.dispatchEvent(customEvent);
+};
+
+const transmitChangedData = (state) => {
+  const customEvent = new CustomEvent('Changed', {
     detail: {
       data: stringifyData(state),
     },
@@ -169,7 +178,7 @@ async function getStateChanges(instance) {
     changes = await instance;
     currNestedState = await checkReactDOM(changes);
     organizeState(currNestedState.currentState[0].children);
-    transmitData(pageSetup);
+    transmitChangedData(pageSetup);
   } catch (e) {
   }
 }

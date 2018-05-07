@@ -11,23 +11,31 @@ chrome.runtime.onConnect.addListener(port => {
 
         //when a devTool is opened, this function adds a tab info to the conections object
         if (msg.name == 'connectBackAndDev') {
-            console.log('making connection');
-            connections[msg.tabId] = {};
-            connections[msg.tabId].port = port;
-            console.log(tempState, '<----- temp state in onConnect before assignment ')
-            connections[msg.tabId].uniqueStates = tempState;
-            connections[msg.tabId].reload = false;
-            connections[msg.tabId].changesToState = [];
-            //this is an array of objects that hold the tab's new instance
-            connections[msg.tabId].instances = [];
+            if (!connections[msg.tab]) {
+                console.log('making first connection');
+                connections[msg.tabId] = {};
+                connections[msg.tabId].port = port;
+                console.log(tempState, '<----- temp state in onConnect before assignment ')
+                connections[msg.tabId].uniqueStates = tempState;
+                connections[msg.tabId].reload = false;
+                connections[msg.tabId].changesToState = [];
+                //this is an array of objects that hold the tab's new instance
+                connections[msg.tabId].instances = [];
 
-            tempState = [];
-            console.log(tempState, '<----- temp state in onConnect')
-            console.log('making connection, after', connections);
-        }
-        if (connections[msg.tabId].uniqueStates.length > 0) {
-            let firstState = connections[msg.tabId].uniqueStates.slice().shift();
-            notifyDevtools(connections[msg.tabId].port, firstState)
+                tempState = [];
+                console.log(tempState, '<----- temp state in onConnect')
+                console.log('AFTERRRR making connection', connections);
+            }
+            // }
+            // if (connections[msg.tabId].uniqueStates.length > 0) {
+            //     console.log('inside line 29');
+            //     let firstState = connections[msg.tabId].uniqueStates.slice().shift();
+            let connectMsg = {
+                name: 'sendingHistory',
+                init: connections[msg.tabId].uniqueStates[0].data,
+                changes: connections[msg.tabId].changesToState
+            }
+            notifyDevtools(connections[msg.tabId].port, connectMsg)
         }
         console.log(tempState, '<----- temp state in onConnect line 32')
     }
@@ -35,18 +43,18 @@ chrome.runtime.onConnect.addListener(port => {
     //listens for port.sendMessage
     port.onMessage.addListener(extensionListener);
 
-    port.onDisconnect.addListener(msg => {
+    // port.onDisconnect.addListener(msg => {
 
-        port.onMessage.removeListener(extensionListener);
-        //loop through connections object and find delete disconnected tab
-        let tabs = Object.keys(connections);
-        for (let i = 0; i < tabs.length; i++) {
-            if (connections[tabs[i]].port === port) {
-                delete connections[tabs[i]];
-                break;
-            }
-        }
-    });
+    //     port.onMessage.removeListener(extensionListener);
+    //     //loop through connections object and find delete disconnected tab
+    //     let tabs = Object.keys(connections);
+    //     for (let i = 0; i < tabs.length; i++) {
+    //         if (connections[tabs[i]].port === port) {
+    //             delete connections[tabs[i]];
+    //             break;
+    //         }
+    //     }
+    // });
 });
 
 // Function to send a message to specific port:
@@ -110,49 +118,60 @@ const findChanges = (prev, curr) => {
 chrome.runtime.onMessage.addListener((msg, sender, res) => {
     console.log('messagessss coming into background', msg, sender, res)
     // validate we are listening for the correct msg
-    if (msg.from === 'content_script' && msg.data) {
+    if (msg.from === 'content_script' && msg.name === 'initialState') {
+        console.log('inside background ====> initialState')
         message = msg.data;
         let tabId = sender.tab.id;
 
-        //compare instances changes
         if (connections[tabId]) {
             if (connections[tabId].reload) {
+                console.log('inside background ====> reload')
                 //reset all instances, states, and changesToState on reload
                 connections[tabId].instances = [];
                 connections[tabId].uniqueStates = [message];
                 connections[tabId].changesToState = [];
                 connections[tabId].reload = false;
-                console.log('tabID before notify', tabId)
-                notifyDevtools(connections[tabId].port, message);
-            }
-
-            if (connections[tabId].uniqueStates.length > 0) {
-                console.log('evkevekve background.js 127')
-                let prev = connections[tabId].uniqueStates[connections[tabId].uniqueStates.length - 1];
-                let curr = message;
-                let newChanges = findChanges(prev, curr);
-                console.log('changesToState', connections[tabId].changesToState)
-                if (Object.keys(newChanges).length > 1) {
-                    connections[tabId].changesToState.push(newChanges);
-                    console.log('connections[tabId].changesToState', connections[tabId].changesToState)
-                    let changedMsg = {
-                        name: 'stateHasChanged',
-                        init: connections[tabId].uniqueStates[0].data,
-                        changes: connections[tabId].changesToState,
-                    }
-                    notifyDevtools(connections[tabId].port, changedMsg);
-                    connections[tabId].uniqueStates.push(message)
+                let reloadMsg = {
+                    name: 'reloadPage',
+                    init: connections[tabId].uniqueStates[0].data,
+                    changes: connections[tabId].changesToState,
                 }
+                notifyDevtools(connections[tabId].port, reloadMsg);
             }
-            connections[tabId].instances.push(message);
         }
-
         console.log('tempS Before', tempState)
         if (tempState.length === 0) tempState.push(message);
         console.log('tempS After', tempState)
-    };
+    }
+
+    if (msg.from === 'content_script' && msg.name === 'changedState') {
+        console.log('inside background ====> changedState')
+
+        message = msg.data;
+        let tabId = sender.tab.id;
+
+        console.log('evkevekve background.js 135')
+        let prev = connections[tabId].uniqueStates[connections[tabId].uniqueStates.length - 1];
+        let curr = message;
+        let newChanges = findChanges(prev, curr);
+
+        console.log('changesToState', connections[tabId].changesToState)
+        if (Object.keys(newChanges).length > 1) {
+            connections[tabId].changesToState.push(newChanges);
+            console.log('connections[tabId].changesToState', connections[tabId].changesToState)
+            let changedMsg = {
+                name: 'stateHasChanged',
+                init: connections[tabId].uniqueStates[0].data,
+                changes: connections[tabId].changesToState,
+            }
+            notifyDevtools(connections[tabId].port, changedMsg);
+            connections[tabId].uniqueStates.push(message)
+        }
+        connections[tabId].instances.push(message);
+    }
 
     if (msg.from === 'content_script' && msg.name === 'srcCodeChanged') {
+        console.log('inside background ====> srcCodeChanged')
         connections[sender.tab.id].reload = true;
         console.log('insdeeeeee 148 background, src code Changed', connections[sender.tab.id].reload)
     }

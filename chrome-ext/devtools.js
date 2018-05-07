@@ -26,25 +26,19 @@ function createPanel() {
                 console.log('windowwww from the devtools', window);
 
                 // Write information to the panel, if exists.
-                // If panel does not exist (yet), the data will be queued.
-                // if (_window && msg.data) {
 
+                if (_window && msg.name === 'reloadPage') {
+                    console.log('went inside line 51', _window)
+                    _window.renderFunc(msg.init, msg.changes, [])
+                }
                 if (_window && msg.name === 'stateHasChanged') {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
                     _window.renderFunc(msg.init, msg.changes, [])
-                    // chrome.runtime.sendMessage({ name: 'stateChanges', stateChanges: msg, initState: init.data })
                 }
 
-                if (_window) {
-                    console.log('went inside line 51', _window)
-                    // init = msg.data;
-                    // _window.renderApp(init, [], [])
-                    // chrome.runtime.sendMessage({ name: 'sendUpdate', initState: msg.data });
-                }
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
                     data.push(msg);
-                    // init = msg;
                 }
             });
 
@@ -62,7 +56,7 @@ function createPanel() {
                     console.log('mssssg in devtoool line 32', msg)
                     console.log('immmm the __window variable  line 59', _window);
                     // chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
-                    _window.renderFunc(msg.data, [], []);
+                    _window.renderFunc(msg.init, msg.changes, []);
                 }
                 // _window.respond = function(msg) {
                 //     port.postMessage(msg)
