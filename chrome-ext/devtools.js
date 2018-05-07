@@ -36,6 +36,11 @@ function createPanel() {
                     _window.renderFunc(msg.init, msg.changes, [])
                 }
 
+                if (_window && msg.name === 'sendingHistory') {
+                    console.log('went inside line 40', _window)
+                    _window.renderFunc(msg.init, msg.changes, [])
+                }
+
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
                     data.push(msg);

@@ -11,7 +11,7 @@ chrome.runtime.onConnect.addListener(port => {
 
         //when a devTool is opened, this function adds a tab info to the conections object
         if (msg.name == 'connectBackAndDev') {
-            if (!connections[msg.tab]) {
+            if (!connections[msg.tabId]) {
                 console.log('making first connection');
                 connections[msg.tabId] = {};
                 connections[msg.tabId].port = port;
@@ -26,10 +26,7 @@ chrome.runtime.onConnect.addListener(port => {
                 console.log(tempState, '<----- temp state in onConnect')
                 console.log('AFTERRRR making connection', connections);
             }
-            // }
-            // if (connections[msg.tabId].uniqueStates.length > 0) {
-            //     console.log('inside line 29');
-            //     let firstState = connections[msg.tabId].uniqueStates.slice().shift();
+
             let connectMsg = {
                 name: 'sendingHistory',
                 init: connections[msg.tabId].uniqueStates[0].data,
@@ -44,7 +41,7 @@ chrome.runtime.onConnect.addListener(port => {
     port.onMessage.addListener(extensionListener);
 
     // port.onDisconnect.addListener(msg => {
-
+    //     console.log('DISCONNECT')
     //     port.onMessage.removeListener(extensionListener);
     //     //loop through connections object and find delete disconnected tab
     //     let tabs = Object.keys(connections);
