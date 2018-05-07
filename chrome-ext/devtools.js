@@ -8,60 +8,65 @@ function createPanel() {
 
             let data = [];
 
+            let init;
+
             //store tabId as variable
             let portId = JSON.stringify(chrome.devtools.inspectedWindow.tabId);
 
             //connect to background.js with connect method, pass in object with name property
-            let port = chrome.runtime.connect({ name: portId });
+            let backgroundConnection = chrome.runtime.connect({ name: 'devtool' });
 
+            backgroundConnection.postMessage({
+                name: 'connectBackAndDev',
+                tabId: chrome.devtools.inspectedWindow.tabId,
+            });
+
+            backgroundConnection.onMessage.addListener(msg => {
+                console.log('immmm in the devtools port.onMessage line 25', msg);
+                console.log('windowwww from the devtools', window);
+
+                // Write information to the panel, if exists.
+
+                if (_window && msg.name === 'reloadPage') {
+                    console.log('went inside line 51', _window)
+                    _window.renderFunc(msg.init, msg.changes, [])
+                }
+                if (_window && msg.name === 'stateHasChanged') {
+                    console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
+                    _window.renderFunc(msg.init, msg.changes, [])
+                }
+
+                if (_window && msg.name === 'sendingHistory') {
+                    console.log('went inside line 40', _window)
+                    _window.renderFunc(msg.init, msg.changes, [])
+                }
+
+                else {
+                    console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
+                    data.push(msg);
+                }
+            });
 
             //show extension panel
             extensionPanel.onShown.addListener(function tmp(panelWindow) {
                 console.log('immmm in the extension panel on shown', panelWindow);
 
                 extensionPanel.onShown.removeListener(tmp); // Run once only
-                
+
                 _window = panelWindow;
-                console.log('immmm the __window variable  line 2666666', _window);
-
+                console.log('immmm the __window variable  line 544', _window);
                 // Release queued data
-                console.log('data in devtoool line 31', data)
-
                 let msg;
                 while (msg = data.shift()) {
                     console.log('mssssg in devtoool line 32', msg)
-                    chrome.runtime.sendMessage({name: 'sendData', initState: msg});
+                    console.log('immmm the __window variable  line 59', _window);
+                    // chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
+                    _window.renderFunc(msg.init, msg.changes, []);
                 }
+                // _window.respond = function(msg) {
+                //     port.postMessage(msg)
+                // }
             });
-
-            port.onMessage.addListener(msg => {
-                console.log('immmm in the port on Messaage line 40', msg);
-
-                // Write information to the panel, if exists.
-                // If panel does not exist (yet), the data will be queued.
-                console.log('windowwww from the devtools', window);
-                console.log('_________WINDOW from the devtools', _window);
-
-                if (_window && msg.data) {
-                    console.log('went inside line 51')
-                }
-                else if (_window && msg.stateHasChanged) {
-                    console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
-                    chrome.runtime.sendMessage({name: 'stateChanges', stateChanges: msg})
-                }
-                else {
-                    console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
-                    data.push(msg);
-                    console.log(data, '<-----data 62')
-
-                }
-
-            });
-
-            port.postMessage({
-                name: 'connect',
-                tabId: chrome.devtools.inspectedWindow.tabId,
-            })
         });
 };
 

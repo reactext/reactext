@@ -12,24 +12,10 @@ const InitialComp = (props) => {
   let consumerLine = [];
   let contextLine = [];
 
-  if(objectsInComp.state){
+  if (objectsInComp.state) {
     let tempArr = []
     let stateKeys = Object.keys(objectsInComp.state)
-    //NOT LOGGING EMPTY ARRAYS OR STRINGS
     stateKeys.forEach((x)=>{
-      // console.log("X IN STATE", x)
-      // console.log("OBJECTS IN COMP", objectsInComp.state)
-      // console.log(objectsInComp.state[x],"STATE TYPEOF", typeof objectsInComp.state[x])
-      // if(typeof objectsInComp.state[x] === 'object' && !Array.isArray(objectsInComp.state[x])){
-      //   console.log(x, "STATE STUFF------> PART 1", objectsInComp.state[x])
-      //   let nestedTemp = [];
-      //   let nestedStateObj = objectsInComp.state[x]
-      //   let nestedStateKeys = Object.keys(nestedStateObj)
-      //   nestedStateKeys.forEach((cu)=>{
-      //     nestedTemp.push(<li>{cu + " : " + nestedStateObj[x]}</li>)
-      //   })
-      //   tempArr.push(<li>{x + " : " + nestedTemp}</li>)
-      // } else {
         if(Array.isArray(objectsInComp.state[x]) && objectsInComp.state[x].length === 0){
           tempArr.push(<li>{x + " : ' '" }</li>)
         } else if (typeof objectsInComp.state[x] === 'string' && objectsInComp.state[x].length === 0) {
@@ -40,20 +26,20 @@ const InitialComp = (props) => {
     })
     stateLine.push(<div>STATE:  <ul>{tempArr}</ul></div>)
   }
-  if(objectsInComp.children){
+  if (objectsInComp.children) {
     let tempArr = []
-    objectsInComp.children.forEach((x,y)=>{
+    objectsInComp.children.forEach((x, y) => {
       tempArr.push(<li>{objectsInComp.children[y]}</li>)
     })
-    if(tempArr.length === 0){
+    if (tempArr.length === 0) {
       tempArr.push(<li>None</li>)
     }
     childrenLine.push(<div>CHILDREN: <ul>{tempArr}</ul></div>)
   }
-  if(objectsInComp.provider){
+  if (objectsInComp.provider) {
     providerLine.push(<div>PROVIDER: <ul>True</ul></div>)
   }
-  if(objectsInComp.consumer){
+  if (objectsInComp.consumer) {
     consumerLine.push(<div>CONSUMER: <ul>True</ul></div>)
   }
   if(objectsInComp.contextValue){
