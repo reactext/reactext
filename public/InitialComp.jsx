@@ -40,9 +40,8 @@ const InitialComp = (props) => {
     consumerLine.push(<div>CONSUMER: <ul>True</ul></div>)
         //As of right now, only adds an empty bullet if a consumer is present, otherwise, no bullet
   }
-  console.log('this should also be working!!!')
+
   if(objectsInComp.contextValue){
-    console.log("CONTEXT", objectsInComp.contextValue)
     if(typeof objectsInComp.contextValue === "string"){
         contextLine.push(<div>CONTEXT: <ul>{objectsInComp.contextValue}</ul></div>)
     } else {
@@ -73,35 +72,9 @@ const InitialComp = (props) => {
     contextUsedLine.push(<div >Active Provider(s): <ul>{tempArr}</ul></div>)
   }
 
-
-
-
-
-  // //Kinda works
-  // let linesForPanel =  keysOfObjectsInCompp.map((curr,ind)=>{
-  //     let contentsOfCurr = props.compInfo[1][curr];
-  //     let parsedContents;
-  //     if(Array.isArray(contentsOfCurr)){
-  // //Parses children
-  //       parsedContents = contentsOfCurr.map((x)=>x)
-  //     } else if (typeof contentsOfCurr === "object" && !Array.isArray(contentsOfCurr)){
-  // //Parses State
-  //       parsedContents = Object.keys(contentsOfCurr).map((x)=>{
-  //         return x + " : " + contentsOfCurr[x]
-  //       })
-  //     } else {
-  // //Parses other stuff
-  //       parsedContents = props.compInfo[1][curr].toString()
-  //     }
-  //     return <div>{curr + " : " + parsedContents}</div>
-  // })
-
   return (
   <div className="InitialComp">
     <h4> {props.compInfo[0]}  </h4>
-    {/* <ul>
-      {linesForPanel}
-    </ul> */}
     <ul>
     {stateLine}
     {childrenLine}
