@@ -116,7 +116,7 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
             if (connections[tabId].reload) {
                 //reset all instances, states, and changesToState on reload
                 connections[tabId].instances = [];
-                connections[tabId].uniqueStates = [];
+                connections[tabId].uniqueStates = [message];
                 connections[tabId].changesToState = [];
                 connections[tabId].reload = false;
                 console.log('tabID before notify', tabId)
@@ -146,7 +146,7 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
 
     if (msg.from === 'content_script' && msg.name === 'srcCodeChanged') {
         connections[sender.tab.id].reload = true;
-        console.log('insdeeeeee 148 background, src code Changed', reload)
+        console.log('insdeeeeee 148 background, src code Changed', connections[sender.tab.id].reload)
     }
     return true;
 });
