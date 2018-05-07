@@ -2,6 +2,7 @@ import React from 'react';
 
 const StateChangeEl = props => {
   console.log(props, "Props in SC El display");
+  delete props.stateInfo.stateHasChanged
   let entries = Object.entries(props.stateInfo);
   let changes = [];
   for (let i = 0; i < entries.length; i++) {

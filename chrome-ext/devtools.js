@@ -8,6 +8,8 @@ function createPanel() {
 
             let data = [];
 
+            let init;
+
             //store tabId as variable
             let portId = JSON.stringify(chrome.devtools.inspectedWindow.tabId);
 
@@ -29,13 +31,14 @@ function createPanel() {
                     console.log('went inside line 51')
                     chrome.runtime.sendMessage({ name: 'sendUpdate', initState: msg.data });
                 }
-                else if (_window && msg.stateHasChanged) {
+                else if (_window && msg[0].stateHasChanged ) {
                     console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
-                    chrome.runtime.sendMessage({ name: 'stateChanges', stateChanges: msg })
+                    chrome.runtime.sendMessage({ name: 'stateChanges', stateChanges: msg, initState: init.data })
                 }
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
                     data.push(msg);
+                    init = msg;
                 }
             });
 
@@ -52,6 +55,9 @@ function createPanel() {
                 while (msg = data.shift()) {
                     console.log('mssssg in devtoool line 32', msg)
                     chrome.runtime.sendMessage({ name: 'sendData', initState: msg.data });
+                }
+                _window.a = () => {
+                    console.log('hiiii there')
                 }
             });
         });

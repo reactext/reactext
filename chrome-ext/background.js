@@ -1,11 +1,7 @@
 let connections = {};
 
-//this is an array of objects that hold the tab's new instance
-let instances = [];
-//this is an array of objects that hold all unique states 
-let uniqueStates = [];
-let changesToState;
-let reload = false;
+//this is an array of objects that hold all temp initial state
+let tempState = [];
 
 //This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(port => {
@@ -16,13 +12,20 @@ chrome.runtime.onConnect.addListener(port => {
         //when a devTool is opened, this function adds a tab info to the conections object
         if (msg.name == 'connectBackAndDev') {
             console.log('making connection');
-            connections[msg.tabId] = port;
-            console.log('making connection, after', connections);
+            connections[msg.tabId] = {};
+            connections[msg.tabId].port = port;
+            connections[msg.tabId].uniqueStates = tempState;
+            connections[msg.tabId].reload = false;
+            connections[msg.tabId].changesToState = [];
+            //this is an array of objects that hold the tab's new instance
+            connections[msg.tabId].instances = [];
 
+            tempState = [];
+            console.log('making connection, after', connections);
         }
-        if (uniqueStates.length > 0) {
-            let firstState = uniqueStates.slice().shift();
-            notifyDevtools(connections[msg.tabId], firstState)
+        if (connections[msg.tabId].uniqueStates.length > 0) {
+            let firstState = connections[msg.tabId].uniqueStates.slice().shift();
+            notifyDevtools(connections[msg.tabId].port, firstState)
         }
     }
 
@@ -35,7 +38,7 @@ chrome.runtime.onConnect.addListener(port => {
         //loop through connections object and find delete disconnected tab
         let tabs = Object.keys(connections);
         for (let i = 0; i < tabs.length; i++) {
-            if (connections[tabs[i]] == port) {
+            if (connections[tabs[i]].port === port) {
                 delete connections[tabs[i]];
                 break;
             }
@@ -106,38 +109,43 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
     // validate we are listening for the correct msg
     if (msg.from === 'content_script' && msg.data) {
         message = msg.data;
-
         let tabId = sender.tab.id;
 
-        if (reload) {
-            //reset all instances, uniqueStates, and changesToState on reload
-            instances = [];
-            uniqueStates = [];
-            reload = false;
-            notifyDevtools(tabId, message);
-        }
-
         //compare instances changes
-        if (uniqueStates.length > 0) {
-            let prev = uniqueStates[uniqueStates.length - 1];
-            let curr = message;
-            changesToState = findChanges(prev, curr)
-            if (Object.keys(changesToState).length > 1) {
-                notifyDevtools(connections[tabId], changesToState);
-                uniqueStates.push(message)
+        if (connections[tabId]) {
+            if (connections[tabId].reload) {
+                //reset all instances, states, and changesToState on reload
+                connections[tabId].instances = [];
+                connections[tabId].uniqueStates = [];
+                connections[tabId].changesToState = [];
+                connections[tabId].reload = false;
+                console.log('tabID before notify', tabId)
+                notifyDevtools(connections[tabId].port, message);
             }
+
+            if (connections[tabId].uniqueStates.length > 0) {
+                console.log('evkevekve background.js 127')
+                let prev = connections[tabId].uniqueStates[connections[tabId].uniqueStates.length - 1];
+                let curr = message;
+                let newChanges = findChanges(prev, curr);
+                console.log('changesToState', connections[tabId].changesToState)
+                if (Object.keys(newChanges).length > 1) {
+                    connections[tabId].changesToState.push(newChanges);
+                    console.log('connections[tabId].changesToState', connections[tabId].changesToState)
+                    notifyDevtools(connections[tabId].port, connections[tabId].changesToState);
+                    connections[tabId].uniqueStates.push(message)
+                }
+            }
+            connections[tabId].instances.push(message);
         }
 
-        if (uniqueStates.length === 0) uniqueStates.push(message);
-        instances.push(message);
-
-        //message object from content_script is stored to state array
-        console.log(instances, '<----this instances array is growing')
-        console.log('unique', uniqueStates)
+        console.log('tempS Before', tempState)
+        if (tempState.length === 0) tempState.push(message);
+        console.log('tempS After', tempState)
     };
 
     if (msg.from === 'content_script' && msg.name === 'srcCodeChanged') {
-        reload = true;
+        connections[sender.tab.id].reload = true;
         console.log('insdeeeeee 148 background, src code Changed', reload)
     }
     return true;
