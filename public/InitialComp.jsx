@@ -15,8 +15,28 @@ const InitialComp = (props) => {
   if(objectsInComp.state){
     let tempArr = []
     let stateKeys = Object.keys(objectsInComp.state)
+    //NOT LOGGING EMPTY ARRAYS OR STRINGS
     stateKeys.forEach((x)=>{
-      tempArr.push(<li>{x + " : " + objectsInComp.state[x]}</li>)
+      // console.log("X IN STATE", x)
+      // console.log("OBJECTS IN COMP", objectsInComp.state)
+      // console.log(objectsInComp.state[x],"STATE TYPEOF", typeof objectsInComp.state[x])
+      // if(typeof objectsInComp.state[x] === 'object' && !Array.isArray(objectsInComp.state[x])){
+      //   console.log(x, "STATE STUFF------> PART 1", objectsInComp.state[x])
+      //   let nestedTemp = [];
+      //   let nestedStateObj = objectsInComp.state[x]
+      //   let nestedStateKeys = Object.keys(nestedStateObj)
+      //   nestedStateKeys.forEach((cu)=>{
+      //     nestedTemp.push(<li>{cu + " : " + nestedStateObj[x]}</li>)
+      //   })
+      //   tempArr.push(<li>{x + " : " + nestedTemp}</li>)
+      // } else {
+        if(Array.isArray(objectsInComp.state[x]) && objectsInComp.state[x].length === 0){
+          tempArr.push(<li>{x + " : ' '" }</li>)
+        } else if (typeof objectsInComp.state[x] === 'string' && objectsInComp.state[x].length === 0) {
+          tempArr.push(<li>{x + " : [ ]"}</li>)
+        } else {
+          tempArr.push(<li>{x + " : " + objectsInComp.state[x]}</li>)
+        }
     })
     stateLine.push(<div>STATE:  <ul>{tempArr}</ul></div>)
   }
@@ -32,56 +52,46 @@ const InitialComp = (props) => {
   }
   if(objectsInComp.provider){
     providerLine.push(<div>PROVIDER: <ul>True</ul></div>)
-    //As of right now, only adds an empty bullet if a provider is present, otherwise, no bullet
   }
   if(objectsInComp.consumer){
     consumerLine.push(<div>CONSUMER: <ul>True</ul></div>)
-        //As of right now, only adds an empty bullet if a consumer is present, otherwise, no bullet
   }
   if(objectsInComp.contextValue){
-    console.log("CONTEXT", objectsInComp.contextValue)
     if(typeof objectsInComp.contextValue === "string"){
+      console.log('CONTEXT IS STRING VALUE')
         contextLine.push(<div>CONTEXT: <ul>{objectsInComp.contextValue}</ul></div>)
     } else {
+      console.log('CONTEXT IS OBJECT VALUE')
         let tempArr = []
         let contextKeys = Object.keys(objectsInComp.contextValue)
         contextKeys.forEach((x)=>{
-        tempArr.push(<li>{x + " : " + objectsInComp.contextValue[x]}</li>)
+          if(typeof objectsInComp.contextValue[x] === 'object' && !Array.isArray(objectsInComp.contextValue[x])){
+            console.log("IS USED. SO I DIDN'T JUST PUT THIS IN THE WRONG PLACE")
+            let nestedTemp = [];
+            let nestedContextObj = objectsInComp.contextValue[x]
+            let nestedContextKeys = Object.keys(nestedContextObj)
+            nestedContextKeys.forEach((cu)=>{
+              console.log("CU------>" , cu)
+              console.log("CU TYPE", typeof cu)
+              nestedTemp.push(<li>{cu + " : " + nestedContextObj[cu]}</li>)
+            })
+            console.log('TO BE APPENDED TO STATE OR ACTION CONTEXT', nestedTemp)
+            console.log('THINK THIS IS STATE OR ACTION', x)
+            tempArr.push(<li>{x}</li>)
+            tempArr.push(<ul>{nestedTemp}</ul>)
+          } else {
+            tempArr.push(<li>{x + " : " + objectsInComp.contextValue[x]}</li>)
+          }
         })
         contextLine.push(<div>CONTEXT: <ul>{tempArr}</ul></div>)
+      
     }
   }
 
 
-
-
-
-
-  // //Kinda works
-  // let linesForPanel =  keysOfObjectsInCompp.map((curr,ind)=>{
-  //     let contentsOfCurr = props.compInfo[1][curr];
-  //     let parsedContents;
-  //     if(Array.isArray(contentsOfCurr)){
-  // //Parses children
-  //       parsedContents = contentsOfCurr.map((x)=>x)
-  //     } else if (typeof contentsOfCurr === "object" && !Array.isArray(contentsOfCurr)){
-  // //Parses State
-  //       parsedContents = Object.keys(contentsOfCurr).map((x)=>{
-  //         return x + " : " + contentsOfCurr[x]
-  //       })
-  //     } else {
-  // //Parses other stuff
-  //       parsedContents = props.compInfo[1][curr].toString()
-  //     }
-  //     return <div>{curr + " : " + parsedContents}</div>
-  // })
-
   return (
   <div className="InitialComp">
     <h4> {props.compInfo[0]}  </h4>
-    {/* <ul>
-      {linesForPanel}
-    </ul> */}
     <ul>
     {stateLine}
     {childrenLine}
