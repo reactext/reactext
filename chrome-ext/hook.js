@@ -115,6 +115,8 @@ const organizeState = (state) => {
   });
 };
 
+console.log(pageSetup, '<=========  THIS IS THE PAGESETUP OBJECT BEFORE THE providerConsumerData() FUNCITON GET CALLED')
+
 
 // ///////////////////////////////////////////////
 
@@ -144,8 +146,8 @@ const transmitData = (state) => {
 // ///////////////
 
 const nestedState = checkReactDOM(firstStatePull.current.stateNode);
-
 organizeState(nestedState.currentState[0].children);
+console.log(nestedState.currentState[0].children, '<===============look in here for the original nested object!!!')
 providerConsumerData(nestedState.currentState[0].children);
 transmitData(pageSetup);
 
@@ -187,64 +189,137 @@ function getConsumerContext(state, componentName) {
   });
 }
 
+/////////////////////////////////// PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
 
 function providerConsumerData(state, componentName = '', providerSymbols = []) {
-  // loop over state!!!!
-  // look for name and save to variable for use later
-  if (typeof state[0].name === 'string' && state[0].name !== 'dont add me') {
-    componentName = state[0].name;// app
-    // does children array have any objects?
-  }
-  if (state[0].name.$$typeof) {
-    if (state[0].name.$$typeof.toString() === 'Symbol(react.provider)') {
 
-      // do something
-      // add proper stuff to the pageSetup
-      pageSetup[componentName].provider = true;
-      pageSetup[componentName].contextValue = state[0].props.value;
-      pageSetup[componentName].tracker = state[0].name.tracker;
-      // does children array have any objects?
-      const subArr = [];
-      subArr.push(componentName, state[0].name.tracker);
-      providerSymbols.push(subArr);
-    }
-
-
-    if (state[0].name.$$typeof.toString() === 'Symbol(react.context)') {
-      if (pageSetup[componentName].Active_Provider) return;
-
-      const trackerId = [];
-      pageSetup[componentName].consumer = true;
-
-      // pageSetup[componentName].tracker = state[0].name.tracker;
-      // add regex stuff
-      getConsumerContext(state, componentName);
-      // adding stuff to
-      const consumerId = [];
-      let currentChild = state[0];
-
-      while (currentChild.name.tracker) {
-        consumerId.push(currentChild.name.tracker);
-
-        currentChild = currentChild.children[0];
+  //checking to see if the state(typeof array) has more than one object. If it does we should iterate over the array
+  if (state.length > 1) {
+    state.forEach((obj) => {
+      // getting the name of the component for each object
+      if (typeof obj.name === 'string' && obj.name !== 'dont add me') {
+        componentName = obj.name;
       }
 
-      providerSymbols.forEach((arr) => {
-        if (consumerId.includes(arr[1])) {
-          trackerId.push(arr[0]);
+      //******* If the object.name is not a struing type but rather another object than it will be in the format {$$typeof: Symbol(react.provider/context), _context: {…}, tracker: Symbol(uniqeId)}
+      // If it is an object than we need to run through provider and consumer blocks and create the appropriate property using the passed in <componentName>
+      /////////////////////////////////////////_____ADDITION_____//////////////////////////////////////////////////
+      if (typeof obj.name === 'object') {
+        if (obj.name.$$typeof.toString() === 'Symbol(react.provider)') {
+          // do something
+          // add proper stuff to the pageSetup
+          pageSetup[componentName].provider = true;
+          pageSetup[componentName].contextValue = obj.props.value;
+          pageSetup[componentName].tracker = obj.name.tracker;
+          // does children array have any objects?
+          const subArr = [];
+          subArr.push(componentName, obj.name.tracker);
+          providerSymbols.push(subArr);
         }
-      });
-      pageSetup[componentName].Active_Provider = trackerId;
 
-    }
+        if (obj.name.$$typeof.toString() === 'Symbol(react.context)') {
+          if (pageSetup[componentName].Active_Provider) return;
+
+          const trackerId = [];
+          pageSetup[componentName].consumer = true;
+          // pageSetup[componentName].tracker = state[0].name.tracker;
+          // add regex stuff
+          getConsumerContext(obj.children, componentName);
+          // adding stuff to
+          const consumerId = [];
+          let currentChild = obj;
+
+          while (currentChild.name.tracker) {
+            consumerId.push(currentChild.name.tracker);
+
+            currentChild = currentChild.children[0];
+          }
+
+          providerSymbols.forEach((arr) => {
+            if (consumerId.includes(arr[1])) {
+              trackerId.push(arr[0]);
+            }
+          });
+          pageSetup[componentName].Active_Provider = trackerId;
+
+        }
+      }
+      //////////////////______END OF ADDITION___________////////////////////
+
+
+      ////// AFTER getting provider/consumer data from obj.name we still need to call the function for its children
+      if (obj.children.length > 0) {
+        // if so PCD(children array)
+        providerConsumerData(obj.children, componentName, providerSymbols);
+      }
+    });
   }
 
-    // does children array have any objects?
-    if (state[0].children.length > 0) {
-      // if so PCD(children array)
-      providerConsumerData(state[0].children, componentName, providerSymbols);
+
+
+  /// SHOULD ONLY RUN WHEN STATE ARRAY HAS ONE OBJECT
+  if (state.length === 1) {
+    if (typeof state[0].name === 'string' && state[0].name !== 'dont add me') {
+      componentName = state[0].name;
     }
 
+    //////////////////////// BLOCK FOR PROVIDER OR CONSUMER DATA
+    if (typeof state[0].name === 'object') {
+
+      /////////////////______START____PROVIDER_BLOCK____//////////////////////////////////
+      if (state[0].name.$$typeof.toString() === 'Symbol(react.provider)') {
+        // do something
+        // add proper stuff to the pageSetup
+        pageSetup[componentName].provider = true;
+        pageSetup[componentName].contextValue = state[0].props.value;
+        pageSetup[componentName].tracker = state[0].name.tracker;
+        // does children array have any objects?
+        const subArr = [];
+        subArr.push(componentName, state[0].name.tracker);
+        providerSymbols.push(subArr);
+      }
+            /////////////////______END____PROVIDER_BLOCK____//////////////////////////////////
+
+      /////////////////______START____CONSUMER_BLOCK____//////////////////////////////////
+      if (state[0].name.$$typeof.toString() === 'Symbol(react.context)') {
+        if (pageSetup[componentName].Active_Provider) return;
+        console.log(componentName, 'this should be the component name inside the consumer block')
+        const trackerId = [];
+        pageSetup[componentName].consumer = true;
+        // pageSetup[componentName].tracker = state[0].name.tracker;
+        // add regex stuff
+        getConsumerContext(state, componentName);
+        // adding stuff to
+        const consumerId = [];
+        let currentChild = state[0];
+
+        while (currentChild.name.tracker) {
+          consumerId.push(currentChild.name.tracker);
+
+          currentChild = currentChild.children[0];
+        }
+
+        providerSymbols.forEach((arr) => {
+          if (consumerId.includes(arr[1])) {
+            trackerId.push(arr[0]);
+          }
+        });
+        pageSetup[componentName].Active_Provider = trackerId;
+
+      }
+    /////////////////______END____CONSUMER_BLOCK____//////////////////////////////////
+    }
 }
 
-console.log(pageSetup, 'im the page set up');
+
+  // does children array have any objects?
+  if (state.length === 1) {
+    if (state[0].children.length > 0) {
+      providerConsumerData(state[0].children, componentName, providerSymbols);
+    }
+  }
+}
+
+/////////////////////////////////// END ____PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
+
+console.log(pageSetup, 'im the page set up last thing in hook.js');
