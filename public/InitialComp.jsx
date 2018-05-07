@@ -2,6 +2,7 @@ import React from 'react';
 
 const InitialComp = (props) => {
   console.log('propppsss in init comp', props)
+  console.log(props.compInfo, 'what is this is it an array?')
   let objectsInComp = props.compInfo[1]
   let keysOfObjectsInComp = Object.keys(props.compInfo[1]);
 
