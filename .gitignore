@@ -1,3 +1,6 @@
 package-lock.json
 node_modules
 chrome-ext/build/
+test-devtools.js
+tests/
+public/consumerComponent.jsx

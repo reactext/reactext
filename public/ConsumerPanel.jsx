@@ -9,28 +9,28 @@ class ConsumerPanel extends Component {
         this.state = {
             showComponent: false,
             component: ''
-          };
-          this._onButtonClick = this._onButtonClick.bind(this);
+        };
+        this._onButtonClick = this._onButtonClick.bind(this);
 
     }
 
     _onButtonClick(component) {
-        if (this.state.showComponent === true){
+        if (this.state.showComponent === true) {
             this.setState({
                 showComponent: false,
                 component: component
-              });
-        }else{
+            });
+        } else {
             this.setState({
-              showComponent: true,
-              component: component
+                showComponent: true,
+                component: component
             });
         }
-      }
+    }
 
-///////// Obtaining Concumer and Providers ///////////
+    ///////// Obtaining Concumer and Providers ///////////
     render() {
-        console.log('props in initial state', this.props.initialState);
+        // console.log('props in initial state', this.props.initialState);
         let pageSetup = this.props.initialState;
         let ProviderObj = {};
         Object.keys(pageSetup).forEach(key => {
@@ -43,46 +43,48 @@ class ConsumerPanel extends Component {
                         ProviderObj[key].children = [];
                     }
                     ProviderObj[key].children.push(provider);
-                    console.log(key, 'these are the keys printed')
+                    // console.log(key, 'these are the keys printed')
                 })
 
             }
         });
-        console.log(ProviderObj, 'the constructed object')
+        // console.log(ProviderObj, 'the constructed object')
 
-////////////////////_React_Tree_Graph_///////////
+        ////////////////////_React_Tree_Graph_///////////
         let trees = [];
         Object.keys(ProviderObj).forEach((consumer, index) => {
             let data = {};
             data.name = consumer;
             data.gProps = {
                 className: 'custom',
-                onClick: (node, event) =>{
+                onClick: (node, event) => {
                     this._onButtonClick(consumer)
                 }
             }
             data.children = [];
-            console.log(ProviderObj[consumer], 'WHAT IS THIS TYPE')
+            // console.log(ProviderObj[consumer], 'WHAT IS THIS TYPE')
 
             ProviderObj[consumer].children.forEach((provider) => {
-                data.children.push({ "name": provider, gProps: {
-                    className: 'custom',
-                    onClick: (node, event) =>{
-                        this._onButtonClick(provider)
+                data.children.push({
+                    "name": provider, gProps: {
+                        className: 'custom',
+                        onClick: (node, event) => {
+                            this._onButtonClick(provider)
+                        }
                     }
-                } });
+                });
             })
-            trees.push(<Tree data={data} height={200} width={400} svgProps={{ className: 'custom1'}}   />);
+            trees.push(<Tree data={data} height={200} width={400} svgProps={{ className: 'custom1' }} />);
         })
 
         ////////////////////_Conditional_Rendering_///////////
         return (
             <div className="custom-container">
                 <div id='treeContainer'>
-                {trees}
+                    {trees}
                 </div>
                 <div className='consumerContent'>
-                {this.state.showComponent ? <PlaceHolder info={this.props.initialState} component ={this.state.component}/> : null}
+                    {this.state.showComponent ?  <PlaceHolder info={this.props.initialState} component={this.state.component} /> : null}
                 </div>
             </div>
         );
@@ -92,48 +94,48 @@ class ConsumerPanel extends Component {
 
 class PlaceHolder extends React.Component {
     render() {
+        console.log(this.props.info[this.props.component].Consumer_Context_Used, 'being used by consumer')
+        console.log(this.props.info[this.props.component].contextValue, 'being passed down by provider')
+        if (this.props.info[this.props.component].Consumer_Context_Used) {
+            let tmpArr = [];
+            this.props.info[this.props.component].Consumer_Context_Used.forEach((curr) => {
+                tmpArr.push(<li> {curr}</li>)
+            })
+            return (<div>Context Used: {tmpArr}</div>)
+        } else {
+            let tmpArr = []
+            if (typeof this.props.info[this.props.component].contextValue === "object") {
+                Object.entries(this.props.info[this.props.component].contextValue).forEach((curr) => {
+                    if (Array.isArray(curr)) {
+                        let nestedTemp = []
+                        if(typeof curr[1] === 'object'){
+                            let tempObj = Object.entries(curr[1])
+                            tempObj.forEach((x) => {
 
-
-        let contextUsedEntry = [<h1>Context Being Used:</h1>];
-        let consumerValueEntry = [<h1>Consumer Value:</h1>]
-
-        if(this.props.info[this.props.component].contextValue){
-            let consumerValue = this.props.info[this.props.component].contextValue;
-            let consumerValueKeys = Object.keys(consumerValue);
-            consumerValueKeys.forEach(e => {
-                console.log(consumerValue[e], 'from consumer');
-            // consumerValueEntry.push(<p>{e} : {consumerValue[e]}</p>);
-            consumerValueEntry.push('<p>{e} : </p>');
-
-            });
+                                nestedTemp.push(<li>{x}</li>)
+                            })
+                            tmpArr.push(<li>{curr[0]} :</li>)
+                            tmpArr.push(<ul>{nestedTemp}</ul>)
+                        } else {
+                            tmpArr.push(<li>{curr[0]}</li>)
+                            tmpArr.push(<ul>{curr[1]}</ul>)
+                        }
+                    } else {
+                        tmpArr.push(<div>{curr}</div>)
+                    }
+                })
+            } else {
+                tmpArr.push(<li>{this.props.info[this.props.component].contextValue}</li>)
+            }
+            return (<div>Values being passed down by Producer: {tmpArr}</div>)
         }
-
-        if(this.props.info[this.props.component].Consumer_Context_Used){
-            let contextUsed = this.props.info[this.props.component].Consumer_Context_Used;
-            let contextUsedKeys = Object.keys(contextUsed);
-            contextUsedKeys.forEach(e => {
-                console.log(contextUsed[e], 'from context');
-                // contextUsedEntry.push(<p>{e} : {contextUsed[e]}</p>);
-                contextUsedEntry.push('<p>{e} : </p>');
-
-                // contextUsedEntry.push(<p>{contextUsed[e]}</p>);
-
-            });
-        }
-
-
-
-        console.log(contextUsedEntry, 'contextUsedEntry');
-        console.log(consumerValueEntry, 'consumerValueEntry');
-
-
-      return (
-        <div>
-           {contextUsedEntry || consumerValueEntry }
-        </div>
-      );
+        //   return (
+        //     <div>
+        //        {JSON.stringify(this.props.info[this.props.component].Consumer_Context_Used) || JSON.stringify(this.props.info[this.props.component].contextValue) }
+        //     </div>
+        //   );
     }
-  }
+}
 
 
 export default ConsumerPanel;
