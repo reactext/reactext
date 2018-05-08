@@ -21,8 +21,8 @@ class App extends Component {
     let view = {
       initial: <InitialState initialState={this.props.initState} />,
       log: <StateChanges stateChangesList={this.props.stateChanges} />,
-      provider: < ProviderPanel />,
-      consumer: <ConsumerPanel />,
+      provider: < ProviderPanel initialState={this.props.initState} />,
+      consumer: <ConsumerPanel initialState={this.props.initState} />,
     }
     return view[this.state.page];
   }
@@ -33,10 +33,11 @@ class App extends Component {
   }
 
   render() {
-    console.log('INSIDEDEEEE render', this.props)
+    // console.log('INSIDEDEEEE render', this.props)
     return (
       <div>
         <NavBar onClick={this.onClick} />
+        <h4>Reactext</h4>
         {this.userPage()}
       </div>
     );

@@ -1,3 +1,4 @@
+
 // start of vars and main logic
 const devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const rid = Object.keys(window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers)[0];
@@ -191,17 +192,31 @@ async function getStateChanges(instance) {
 // state
 function getConsumerContext(state, componentName) {
   if (state.length === 0) return;
+if (typeof state === 'object' && !Array.isArray(state)){
+  if (state.props && state.props.children && typeof state.props.children === 'function') {
+    const strFunc = state.props.children.toString();
+    const regex = /\((.*)\)/;
+    const argumentInFunc = regex.exec(strFunc)[1];
+    const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\W`, 'gm');
+
+    pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
+  }
+} else {
 
   state.forEach((cObj) => {
+    console.log(state, 'what is in this state array from line 194 =====> componenname', componentName)
+    console.log(cObj, 'One of these should be the context value of Marketcreator!')
+    console.log(cObj.props.children, 'One of these should be the context value of Marketcreator!')
     if (cObj.props && cObj.props.children && typeof cObj.props.children === 'function') {
       const strFunc = cObj.props.children.toString();
       const regex = /\((.*)\)/;
       const argumentInFunc = regex.exec(strFunc)[1];
-      const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\W`, 'gm');
+      const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\s`, 'gm');
 
       pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
     }
   });
+}
 }
 
 /////////////////////////////////// PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
@@ -239,6 +254,9 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
           pageSetup[componentName].consumer = true;
           // pageSetup[componentName].tracker = state[0].name.tracker;
           // add regex stuff
+          console.log(componentName, 'one of these shuld be the marketsContainer', obj, '<=========this one is the obj.children');
+
+          getConsumerContext(obj, componentName);
           getConsumerContext(obj.children, componentName);
           // adding stuff to
           const consumerId = [];
@@ -302,6 +320,8 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
         const trackerId = [];
         pageSetup[componentName].consumer = true;
         // pageSetup[componentName].tracker = state[0].name.tracker;
+
+        console.log(componentName, 'one of these shuld be the marketsContainer', state[0], '<=========this one is the obj.children');
         // add regex stuff
         getConsumerContext(state, componentName);
         // adding stuff to
