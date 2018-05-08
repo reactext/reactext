@@ -11,23 +11,25 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // initialState: '',
-      page : 'initialState',
+      page: 'initialState',
     };
     this.userPage = this.userPage.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
-  userPage () {
-    if (this.state.page === 'initialState') {
-      return (
-        <InitialState initialState={this.props.initState} />
-      );
+  userPage() {
+    let view = {
+      initial: <InitialState initialState={this.props.initState} />,
+      log: <StateChanges stateChangesList={this.props.stateChanges} />,
+      provider: < ProviderPanel />,
+      consumer: <ConsumerPanel />,
     }
-    if (this.state.page === 'stateChanges') {
-      return (
-        <StateChanges stateChangesList={this.props.stateChanges} />
-      );
-    }
+    return view[this.state.page];
+  }
+
+  onClick(view) {
+    let page = view;
+    this.setState({ ...this.state, page })
   }
 
   render() {
@@ -35,7 +37,7 @@ class App extends Component {
     return (
       <div>
         <h4>Reactext</h4>
-        <NavBar />
+        <NavBar onClick={this.onClick} />
         {this.userPage()}
       </div>
     );
