@@ -36,7 +36,6 @@ class App extends Component {
     console.log('INSIDEDEEEE render', this.props)
     return (
       <div>
-        <h4>Reactext</h4>
         <NavBar onClick={this.onClick} />
         {this.userPage()}
       </div>

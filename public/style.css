@@ -1,0 +1,65 @@
+/* Global*/
+*{
+    margin:0;
+    padding:0;
+}
+
+button{
+    width: 25%;
+}
+
+body{
+    background-color: rgb(46, 46, 46)
+}
+
+/* Initial State */
+#hierarchy{
+    background-color: rgb(231, 231, 106);
+    height: 100%;
+    width: 67%
+}
+
+#statePannel{
+    background-color: lightseagreen;
+    height: 100%;
+    width: 33%
+}
+
+#initialState{
+    display:flex;
+    height: 100%;
+    background-color: pink;
+}
+
+.componentName{
+    text-align: center;
+    font-size: 115%;
+    font-weight: bolder;
+    background-color: lightgrey;
+}
+
+.initialComp{
+    margin: 15px;
+    background:white;
+}
+
+.childrenDiv{
+    padding: 0 15px;
+    margin: 10px 0px;
+}
+
+#logo{
+    text-align: center;
+}
+
+.stateUl{
+    margin-left:15px;
+}
+
+.componentStateName{
+    text-align: center;
+}
+
+.stateDiv{
+    margin-top:10px;
+}
