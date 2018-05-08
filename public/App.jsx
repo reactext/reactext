@@ -28,6 +28,13 @@ class App extends Component {
   }
 
   onClick(view) {
+    document.getElementById('initial').classList.remove('activeButton');
+    document.getElementById('log').classList.remove('activeButton');
+    document.getElementById('provider').classList.remove('activeButton');
+    document.getElementById('consumer').classList.remove('activeButton');
+
+    document.getElementById(view).classList.add('activeButton');
+
     let page = view;
     this.setState({ ...this.state, page })
   }
@@ -37,7 +44,6 @@ class App extends Component {
     return (
       <div>
         <NavBar onClick={this.onClick} />
-        <h4>Reactext</h4>
         {this.userPage()}
       </div>
     );

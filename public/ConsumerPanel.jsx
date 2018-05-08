@@ -13,7 +13,7 @@ class ConsumerPanel extends Component {
           this._onButtonClick = this._onButtonClick.bind(this);
 
     }
-    
+
     _onButtonClick(component) {
         if (this.state.showComponent === true){
             this.setState({
@@ -78,8 +78,12 @@ class ConsumerPanel extends Component {
         ////////////////////_Conditional_Rendering_///////////
         return (
             <div className="custom-container">
+                <div id='treeContainer'>
                 {trees}
-                {this.state.showComponent ? <div> <PlaceHolder info={this.props.initialState} component ={this.state.component}/></div> : null}
+                </div>
+                <div className='consumerContent'>
+                {this.state.showComponent ? <PlaceHolder info={this.props.initialState} component ={this.state.component}/> : null}
+                </div>
             </div>
         );
     }
@@ -88,10 +92,44 @@ class ConsumerPanel extends Component {
 
 class PlaceHolder extends React.Component {
     render() {
-        console.log(JSON.stringify(this.props.info[this.props.component].Consumer_Context_Used), 'YOYOYOYY')
+
+
+        let contextUsedEntry = [<h1>Context Being Used:</h1>];
+        let consumerValueEntry = [<h1>Consumer Value:</h1>]
+
+        if(this.props.info[this.props.component].contextValue){
+            let consumerValue = this.props.info[this.props.component].contextValue;
+            let consumerValueKeys = Object.keys(consumerValue);
+            consumerValueKeys.forEach(e => {
+                console.log(consumerValue[e], 'from consumer');
+            // consumerValueEntry.push(<p>{e} : {consumerValue[e]}</p>);
+            consumerValueEntry.push('<p>{e} : </p>');
+
+            });
+        }
+
+        if(this.props.info[this.props.component].Consumer_Context_Used){
+            let contextUsed = this.props.info[this.props.component].Consumer_Context_Used;
+            let contextUsedKeys = Object.keys(contextUsed);
+            contextUsedKeys.forEach(e => {
+                console.log(contextUsed[e], 'from context');
+                // contextUsedEntry.push(<p>{e} : {contextUsed[e]}</p>);
+                contextUsedEntry.push('<p>{e} : </p>');
+
+                // contextUsedEntry.push(<p>{contextUsed[e]}</p>);
+
+            });
+        }
+
+
+
+        console.log(contextUsedEntry, 'contextUsedEntry');
+        console.log(consumerValueEntry, 'consumerValueEntry');
+
+
       return (
         <div>
-           {JSON.stringify(this.props.info[this.props.component].Consumer_Context_Used) || JSON.stringify(this.props.info[this.props.component].contextValue) }
+           {contextUsedEntry || consumerValueEntry }
         </div>
       );
     }

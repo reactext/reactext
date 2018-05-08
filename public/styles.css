@@ -1,11 +1,15 @@
 div.custom-container {
-	background-color: #23dfed;
+	background-color: rgb(45, 53, 60);
+	margin: 10px;
+	display:flex;
+	
 }
 
 svg.custom1 .custom circle {
 	fill: #F3F3FF;
 	stroke: #2593B8;
-	stroke-width: 1.5px;
+	stroke-width: 5px;
+	fill-width:4px;
 }
 
 svg.custom1 .custom text {
