@@ -1,17 +1,33 @@
-import React from 'react';
+import React, { Component } from 'react';
 import InitialState from '.././InitialState.jsx';
 import StateChanges from '.././StateChanges.jsx';
+import ProviderPanel from '.././ProviderPanel.jsx';
+import ConsumerPanel from '.././ConsumerPanel.jsx';
+
+class LogContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      page: 'initialState'
+    }
+    this.userPage = this.userPage.bind(this)
+  }
+
+  userPage () {
+    if (this.state.page === 'initialState') {
+      return (
+        <InitialState initialState={this.props.initState} />
+      );
+    }
+  }
+
+  render() {
+    return (
+      <div className="LogContainer" style={{ backgroundColor: 'orange' }}>
+        {this.userPage()}
+    </div>
+  )}
+};
 
 
-const LogContainer = props => {
-    console.log('props in LC', props)
-    return(
-      <div className="LogContainer" style={{backgroundColor:'orange'}}>
-        <h4>This is the log container.</h4>
-        <InitialState initialState={props.initState}/>
-        <StateChanges stateChangesList={props.stateChangesList} />
-      </div>
-    );
-  };
-  
-  export default LogContainer;
+export default LogContainer;
