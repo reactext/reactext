@@ -1,8 +1,6 @@
 import React from 'react';
 
 const InitialComp = (props) => {
-  console.log('propppsss in init comp', props)
-  console.log(props.compInfo, 'what is this is it an array?')
   let objectsInComp = props.compInfo[1]
   let keysOfObjectsInComp = Object.keys(props.compInfo[1]);
 
@@ -14,31 +12,35 @@ const InitialComp = (props) => {
   let contextUsedLine = [];
   let activeProvider = [];
 
-  if(objectsInComp.state){
+  if (objectsInComp.state) {
     let tempArr = []
     let stateKeys = Object.keys(objectsInComp.state)
-    stateKeys.forEach((x,i)=>{
-      tempArr.push(<li  key={i}  >{x + " : " + objectsInComp.state[x]}</li>)
+    stateKeys.forEach((x)=>{
+        if(Array.isArray(objectsInComp.state[x]) && objectsInComp.state[x].length === 0){
+          tempArr.push(<li>{x + " : ' '" }</li>)
+        } else if (typeof objectsInComp.state[x] === 'string' && objectsInComp.state[x].length === 0) {
+          tempArr.push(<li>{x + " : [ ]"}</li>)
+        } else {
+          tempArr.push(<li>{x + " : " + objectsInComp.state[x]}</li>)
+        }
     })
     stateLine.push(<div>STATE:  <ul>{tempArr}</ul></div>)
   }
-  if(objectsInComp.children){
+  if (objectsInComp.children) {
     let tempArr = []
     objectsInComp.children.forEach((x,i)=>{
       tempArr.push(<li key={i} >{objectsInComp.children[i]}</li>)
     })
-    if(tempArr.length === 0){
+    if (tempArr.length === 0) {
       tempArr.push(<li>None</li>)
     }
     childrenLine.push(<div>CHILDREN: <ul>{tempArr}</ul></div>)
   }
-  if(objectsInComp.provider){
+  if (objectsInComp.provider) {
     providerLine.push(<div>PROVIDER: <ul>True</ul></div>)
-    //As of right now, only adds an empty bullet if a provider is present, otherwise, no bullet
   }
-  if(objectsInComp.consumer){
+  if (objectsInComp.consumer) {
     consumerLine.push(<div>CONSUMER: <ul>True</ul></div>)
-        //As of right now, only adds an empty bullet if a consumer is present, otherwise, no bullet
   }
 
   if(objectsInComp.contextValue){
@@ -47,10 +49,22 @@ const InitialComp = (props) => {
     } else {
         let tempArr = []
         let contextKeys = Object.keys(objectsInComp.contextValue)
-        contextKeys.forEach((x,i)=>{
-        tempArr.push(<li key={i} >{x + " : " + objectsInComp.contextValue[x]}</li>)
+        contextKeys.forEach((x)=>{
+          if(typeof objectsInComp.contextValue[x] === 'object' && !Array.isArray(objectsInComp.contextValue[x])){
+            let nestedTemp = [];
+            let nestedContextObj = objectsInComp.contextValue[x]
+            let nestedContextKeys = Object.keys(nestedContextObj)
+            nestedContextKeys.forEach((cu)=>{
+              nestedTemp.push(<li>{cu + " : " + nestedContextObj[cu]}</li>)
+            })
+            tempArr.push(<li>{x}</li>)
+            tempArr.push(<ul>{nestedTemp}</ul>)
+          } else {
+            tempArr.push(<li>{x + " : " + objectsInComp.contextValue[x]}</li>)
+          }
         })
         contextLine.push(<div>CONTEXT: <ul>{tempArr}</ul></div>)
+
     }
   }
 

@@ -26,6 +26,7 @@
     "webpack": "^4.6.0"
   },
   "devDependencies": {
+    "addtracker": "^1.0.1",
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
