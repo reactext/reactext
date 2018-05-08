@@ -24,3 +24,46 @@ svg.custom1 path.link {
 	stroke: #2593B8;
 	stroke-width: 1.5px;
 }
+
+
+#changesContainer{
+	display: flex;
+	flex-direction: row;
+}
+
+#prevCurrContainer{
+	display: flex;
+	flex-direction: row;
+}
+
+#propsContainer{
+	display: flex;
+	flex-direction: column;
+	background-color: yellow;
+	width: 75%
+}
+
+#titlesContainer{
+	display: flex;
+	flex-direction: row;
+}
+
+#compName{
+	width: 25%
+}
+		
+.column{
+	display:flex;
+}
+
+.title {
+	width: 25%;
+}
+
+.box{
+	width: 33.33%;
+}
+
+#prevCurrContainer .box{
+	word-wrap: break-word;
+}

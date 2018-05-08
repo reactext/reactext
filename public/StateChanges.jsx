@@ -7,16 +7,16 @@ class StateChanges extends Component {
   }
 
   render() {
-    console.log('props in stateChangessssss', this.props)
     let changes = [];
     for (let i = 0; i < this.props.stateChangesList.length; i++) {
-      changes.push(<StateChangesEl key={i} stateInfo={this.props.stateChangesList[i]}/>);
+      changes.push(<StateChangesEl key={i} stateInfo={this.props.stateChangesList[i]} />);
     }
+
     return (
-      <div style={{ backgroundColor: 'pink' }}>
+      <div id='stateChanges'>
         <h3>Log state Changes hereeeee</h3>
         <div>{changes}</div>
-      </div>
+      </div >
     );
   }
 }

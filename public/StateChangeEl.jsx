@@ -1,22 +1,32 @@
 import React from 'react';
+import PropsChangesEl from './PropsChangesEl.jsx'
 
 const StateChangeEl = props => {
   console.log(props, "Props in SC El display");
   delete props.stateInfo.stateHasChanged
   let entries = Object.entries(props.stateInfo);
+  console.log('entries', entries)
   let changes = [];
+  let titles = [
+     <div id='titlesContainer'>
+       <div className='title'>Component</div>
+       <div className='title'>Prop Name</div>
+       <div className='title'>Previous Val</div>
+       <div className='title'>Current Val</div>
+     </div>
+  ]
   for (let i = 0; i < entries.length; i++) {
     changes.push(
-      <li key={i}>
-        <span>{entries[i][0]}</span>
-        <br /><ul>{entries[i][1].map((el, idx) => <li key={idx}> <strong>{el[0]}:</strong> <strong>prev: </strong> {JSON.stringify(el[1])}  <strong>curr: </strong>{JSON.stringify(el[2])}</li>)}</ul>
-      </li>
+      <div key={i}>
+        {titles}
+        <PropsChangesEl key={i} entries={entries[i]} />
+      </div>
     )
   }
   return (
     <div className="StateChangeEl">
-      <h4>StateChange: </h4>
-      <ul>{changes}</ul>
+      <h4>StateChange:</h4>
+      {changes}
     </div>
   );
 }
