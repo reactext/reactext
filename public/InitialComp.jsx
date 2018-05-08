@@ -1,8 +1,6 @@
 import React from 'react';
 
 const InitialComp = (props) => {
-  console.log('propppsss in init comp', props)
-  console.log(props.compInfo, 'what is this is it an array?')
   let objectsInComp = props.compInfo[1]
   let keysOfObjectsInComp = Object.keys(props.compInfo[1]);
 
@@ -11,6 +9,8 @@ const InitialComp = (props) => {
   let providerLine = [];
   let consumerLine = [];
   let contextLine = [];
+  let contextUsedLine = [];
+  let activeProvider = [];
 
   if (objectsInComp.state) {
     let tempArr = []
@@ -28,8 +28,8 @@ const InitialComp = (props) => {
   }
   if (objectsInComp.children) {
     let tempArr = []
-    objectsInComp.children.forEach((x, y) => {
-      tempArr.push(<li>{objectsInComp.children[y]}</li>)
+    objectsInComp.children.forEach((x,i)=>{
+      tempArr.push(<li key={i} >{objectsInComp.children[i]}</li>)
     })
     if (tempArr.length === 0) {
       tempArr.push(<li>None</li>)
@@ -42,27 +42,21 @@ const InitialComp = (props) => {
   if (objectsInComp.consumer) {
     consumerLine.push(<div>CONSUMER: <ul>True</ul></div>)
   }
+
   if(objectsInComp.contextValue){
     if(typeof objectsInComp.contextValue === "string"){
-      console.log('CONTEXT IS STRING VALUE')
         contextLine.push(<div>CONTEXT: <ul>{objectsInComp.contextValue}</ul></div>)
     } else {
-      console.log('CONTEXT IS OBJECT VALUE')
         let tempArr = []
         let contextKeys = Object.keys(objectsInComp.contextValue)
         contextKeys.forEach((x)=>{
           if(typeof objectsInComp.contextValue[x] === 'object' && !Array.isArray(objectsInComp.contextValue[x])){
-            console.log("IS USED. SO I DIDN'T JUST PUT THIS IN THE WRONG PLACE")
             let nestedTemp = [];
             let nestedContextObj = objectsInComp.contextValue[x]
             let nestedContextKeys = Object.keys(nestedContextObj)
             nestedContextKeys.forEach((cu)=>{
-              console.log("CU------>" , cu)
-              console.log("CU TYPE", typeof cu)
               nestedTemp.push(<li>{cu + " : " + nestedContextObj[cu]}</li>)
             })
-            console.log('TO BE APPENDED TO STATE OR ACTION CONTEXT', nestedTemp)
-            console.log('THINK THIS IS STATE OR ACTION', x)
             tempArr.push(<li>{x}</li>)
             tempArr.push(<ul>{nestedTemp}</ul>)
           } else {
@@ -70,10 +64,27 @@ const InitialComp = (props) => {
           }
         })
         contextLine.push(<div>CONTEXT: <ul>{tempArr}</ul></div>)
-      
+
     }
   }
 
+  if(objectsInComp.Consumer_Context_Used){
+    let tempArr = [];
+    let unique_Context_Used = new Set(objectsInComp.Consumer_Context_Used);
+    unique_Context_Used.forEach((x,i) => {
+      let item = x.slice(0, -1);
+      tempArr.push(<li key={i} >{item}</li>);
+    });
+    contextUsedLine.push(<div >Context Used: <ul>{tempArr}</ul></div>)
+  }
+
+  if(objectsInComp.Active_Provider){
+    let tempArr = [];
+    objectsInComp.Active_Provider.forEach((x,i) => {
+      tempArr.push(<li key={i} >{x}</li>);
+    });
+    contextUsedLine.push(<div >Active Provider(s): <ul>{tempArr}</ul></div>)
+  }
 
   return (
   <div className="InitialComp">
@@ -84,6 +95,8 @@ const InitialComp = (props) => {
     {providerLine}
     {consumerLine}
     {contextLine}
+    {contextUsedLine}
+    {activeProvider}
     </ul>
   </div>
   );

@@ -7,6 +7,8 @@ let firstStatePull;
 let changes;
 let currNestedState;
 
+
+
 stateSet.forEach((e) => {
   firstStatePull = e;
 });
@@ -15,6 +17,7 @@ stateSet.forEach((e) => {
 // //////////////
 const checkReactDOM = (reactDOM) => {
   // current state will be an array of all the caches.
+  // console.log(reactDOM.current, 'im the reactDOM.current...');
   const data = {
     currentState: null,
 
@@ -23,6 +26,8 @@ const checkReactDOM = (reactDOM) => {
   const cache = [];
 
   if (reactDOM) {
+    console.log(reactDOM.current, 'hopefully this doesnt kill the computer!!!');
+    console.log(typeof reactDOM.current, 'hopefully this doesnt kill the computer!!!');
     traverseAndGatherReactDOM(reactDOM.current, cache);
   } else {
     return;
@@ -35,6 +40,7 @@ const checkReactDOM = (reactDOM) => {
 
 // /////////////////////////////////////
 const traverseAndGatherReactDOM = (node, cache) => {
+  // console.log('im the node: ', node);
   const component = {
     id: null,
     name: 'dont add me',
@@ -115,7 +121,7 @@ const organizeState = (state) => {
   });
 };
 
-console.log(pageSetup, '<=========  THIS IS THE PAGESETUP OBJECT BEFORE THE providerConsumerData() FUNCITON GET CALLED')
+// console.log(pageSetup, '<=========  THIS IS THE PAGESETUP OBJECT BEFORE THE providerConsumerData() FUNCITON GET CALLED')
 
 
 // ///////////////////////////////////////////////
@@ -156,7 +162,7 @@ const transmitChangedData = (state) => {
 
 const nestedState = checkReactDOM(firstStatePull.current.stateNode);
 organizeState(nestedState.currentState[0].children);
-console.log(nestedState.currentState[0].children, '<===============look in here for the original nested object!!!')
+// console.log(nestedState.currentState[0].children, '<===============look in here for the original nested object!!!')
 providerConsumerData(nestedState.currentState[0].children);
 transmitData(pageSetup);
 
@@ -198,14 +204,14 @@ function getConsumerContext(state, componentName) {
   });
 }
 
-/////////////////////////////////// PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// ///////////////// 
+/////////////////////////////////// PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
 
 function providerConsumerData(state, componentName = '', providerSymbols = []) {
 
   //checking to see if the state(typeof array) has more than one object. If it does we should iterate over the array
   if (state.length > 1) {
     state.forEach((obj) => {
-      // getting the name of the component for each object 
+      // getting the name of the component for each object
       if (typeof obj.name === 'string' && obj.name !== 'dont add me') {
         componentName = obj.name;
       }
@@ -256,7 +262,7 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
       //////////////////______END OF ADDITION___________////////////////////
 
 
-      ////// AFTER getting provider/consumer data from obj.name we still need to call the function for its children 
+      ////// AFTER getting provider/consumer data from obj.name we still need to call the function for its children
       if (obj.children.length > 0) {
         // if so PCD(children array)
         providerConsumerData(obj.children, componentName, providerSymbols);
@@ -271,7 +277,7 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
     if (typeof state[0].name === 'string' && state[0].name !== 'dont add me') {
       componentName = state[0].name;
     }
-  
+
     //////////////////////// BLOCK FOR PROVIDER OR CONSUMER DATA
     if (typeof state[0].name === 'object') {
 
@@ -329,6 +335,6 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
   }
 }
 
-/////////////////////////////////// END ____PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// ///////////////// 
+/////////////////////////////////// END ____PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
 
-console.log(pageSetup, 'im the page set up last thing in hook.js'); 
+console.log(pageSetup, 'im the page set up last thing in hook.js');
