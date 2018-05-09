@@ -6,11 +6,9 @@ function createPanel() {
         function (extensionPanel) {
             let _window; // This will hold the reference to panel.html's `window`
 
-            // let data = [];
-            let data ={}
-            let data2 =[];
-
-            let init;
+            //this data object stores the values that come in from content_script upon opening a new tab
+            //when the user opens the devTool, we get the info for the corresponding tab from this object 
+            let data = {}
 
             //store tabId as variable
             let portId = JSON.stringify(chrome.devtools.inspectedWindow.tabId);
@@ -24,50 +22,38 @@ function createPanel() {
             });
 
             backgroundConnection.onMessage.addListener(msg => {
-                console.log('immmm in the devtools port.onMessage line 25', msg);
 
-                // Write information to the panel, if exists.
-                if (_window && msg.name === 'reloadPage') {
-                    _window.renderFunc(msg.init, msg.changes, [])
-                }
-                if (_window && msg.name === 'stateHasChanged') {
-                    _window.renderFunc(msg.init, msg.changes, [])
-                }
-                if (_window && msg.name === 'sendingHistory') {
-                    _window.renderFunc(msg.init, msg.changes, [])
-                }
+                //saves data from background.js in data object if the devTool panel has not been opened
                 if (msg.name === 'sendingHistory') {
-                    console.log('went inside line 45', msg)
-                    data2[msg.tab] = msg;
+                    return data[msg.tab] = msg;
+                    console.log(data, 'data on line 32')
                 }
-                else {
-                    console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
-                    data2.push(msg);
+                //this renders the first version of the devTool since _window (ie the panel) is open
+                if (_window && msg.name === 'sendingHistory') {
+                    return _window.renderFunc(msg.init, msg.changes, [])
+                }                
+                //rerenders page if receives reload message from background.js
+                if (_window && msg.name === 'reloadPage') {
+                    return _window.renderFunc(msg.init, msg.changes, [])
+                }
+                //rerenders page with new state changes if receives stateHasChanged msg from background.js
+                if (_window && msg.name === 'stateHasChanged') {
+                    return _window.renderFunc(msg.init, msg.changes, [])
                 }
             });
 
-            //show extension panel
+            //this listener fires when extension panel is opened
             extensionPanel.onShown.addListener(function tmp(panelWindow) {
-                console.log('immmm in the extension panel on shown', panelWindow);
-
-                // extensionPanel.onShown.removeListener(tmp); // Run once only
+                extensionPanel.onShown.removeListener(tmp); // Run once only
 
                 _window = panelWindow;
-                console.log('immmm the __window variable  line 544', _window);
-                // Release queued data
-                let msg;
-                console.log('CDIWT', chrome.devtools.inspectedWindow.tabId)
+
+                //check if active tab is in data object and then use info to render devTool panel
                 let activeTab = chrome.devtools.inspectedWindow.tabId
                 if (data[activeTab]) {
                     _window.renderFunc(data[activeTab].init, data[activeTab].changes, []);
                     delete data[activeTab];
                 }
-                // while (msg = data.shift()) {
-                //     _window.renderFunc(msg.init, msg.changes, []);
-                // }
-                // _window.respond = function(msg) {
-                //     port.postMessage(msg)
-                // }
             });
         });
 };
