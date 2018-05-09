@@ -80,8 +80,12 @@ class ConsumerPanel extends Component {
         ////////////////////_Conditional_Rendering_///////////
         return (
             <div className="custom-container">
-                {trees}
-                {this.state.showComponent ? <div> <PlaceHolder info={this.props.initialState} component={this.state.component} /></div> : null}
+                <div id='treeContainer'>
+                    {trees}
+                </div>
+                <div className='consumerContent'>
+                    {this.state.showComponent ?  <PlaceHolder info={this.props.initialState} component={this.state.component} /> : null}
+                </div>
             </div>
         );
     }
@@ -107,9 +111,10 @@ class PlaceHolder extends React.Component {
                         if(typeof curr[1] === 'object'){
                             let tempObj = Object.entries(curr[1])
                             tempObj.forEach((x) => {
+
                                 nestedTemp.push(<li>{x}</li>)
                             })
-                            tmpArr.push(<li>{curr[0]}</li>)
+                            tmpArr.push(<li>{curr[0]} :</li>)
                             tmpArr.push(<ul>{nestedTemp}</ul>)
                         } else {
                             tmpArr.push(<li>{curr[0]}</li>)

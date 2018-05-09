@@ -14,7 +14,7 @@ class StateChanges extends Component {
 
     return (
       <div id='stateChanges'>
-        <h3>Log state Changes hereeeee</h3>
+        <h3>Changes to state log below:</h3>
         <div>{changes}</div>
       </div >
     );

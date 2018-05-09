@@ -13,7 +13,7 @@ class ProviderPanel extends Component {
           this._onButtonClick = this._onButtonClick.bind(this);
 
     }
-    
+
     _onButtonClick(component) {
         if (this.state.showComponent === true){
             this.setState({
@@ -72,14 +72,18 @@ class ProviderPanel extends Component {
                     }
                 } });
             })
-            trees.push(<Tree data={data} height={200} width={400} svgProps={{ className: 'custom1'}}   />);
+            trees.push(<Tree  data={data} height={200} width={400} svgProps={{ className: 'custom1'}}   />);
         })
 
         ////////////////////_Conditional_Rendering_///////////
         return (
             <div className="custom-container">
+                <div id='treeContainer'>
                 {trees}
-                {this.state.showComponent ? <div> <PlaceHolder info={this.props.initialState} component ={this.state.component}/></div> : null}
+                </div>
+                <div className='providerContent'>
+                {this.state.showComponent ? <PlaceHolder info={this.props.initialState} component ={this.state.component}/> : null}
+                </div>
             </div>
         );
     }

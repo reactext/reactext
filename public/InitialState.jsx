@@ -15,7 +15,10 @@ class InitialState extends Component {
         initialStateComp.push(<InitialComp key={i} compInfo={comp[i]} />)
     }
     return (
-      <div className='initialState'>{initialStateComp}</div>
+      <div id='initialState'>
+        <div id='hierarchy'>{initialStateComp}</div>
+        <div id='statePannel'></div>
+      </div>
     );
   }
 };
