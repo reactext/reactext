@@ -9,10 +9,10 @@ const StateChangeEl = props => {
   let changes = [];
   let titles = [
      <div id='titlesContainer'>
-       <div className='title'>Component</div>
-       <div className='title'>Prop Name</div>
-       <div className='title'>Previous Val</div>
-       <div className='title'>Current Val</div>
+       <div className='title section1'>Component</div>
+       <div className='title section2'>Prop Name</div>
+       <div className='title section3'>Previous Val</div>
+       <div className='title section4'>Current Val</div>
      </div>
   ]
   for (let i = 0; i < entries.length; i++) {
@@ -25,7 +25,7 @@ const StateChangeEl = props => {
   }
   return (
     <div className="StateChangeEl">
-      <h4>StateChange:</h4>
+      <h4 className='stateChangesHeader'>StateChange:</h4>
       {changes}
     </div>
   );

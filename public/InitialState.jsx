@@ -17,7 +17,7 @@ class InitialState extends Component {
     return (
       <div id='initialState'>
         <div id='hierarchy'>{initialStateComp}</div>
-        <div id='statePannel'>State:</div>
+        <div id='statePannel'></div>
       </div>
     );
   }

@@ -11,7 +11,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: 'initialState',
+      page: 'initial',
     };
     this.userPage = this.userPage.bind(this);
     this.onClick = this.onClick.bind(this);
