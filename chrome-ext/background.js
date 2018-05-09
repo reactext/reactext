@@ -1,6 +1,7 @@
+//this is an object of objects that hold all active ports
 let connections = {};
 
-//this is an array of objects that hold all temp initial state
+//this is an object of objects that hold all temp initial state sent in from content_script.js
 let tempStateStorage = {};
 
 //This listens for a chrom.runtime.onConnect to be fired
@@ -9,46 +10,32 @@ chrome.runtime.onConnect.addListener(port => {
     const extensionListener = (msg, sender, res) => {
         console.log('extension listener in background fired', msg);
 
-        //when a devTool is opened, this function adds a tab info to the conections object
+        console.log(connections, 'connections port 13')
+        console.log(tempStateStorage, '<----- temp state in onConnect line 14')
+
+        //when a devTool is opened, this function all related tab info to the conections object from the tempStateStorage
         if (msg.name == 'connectBackAndDev') {
             if (!connections[msg.tabId]) {
-                connections[msg.tabId] = {};
-                connections[msg.tabId].port = port;
+                connections[msg.tabId] = port;
                 connections[msg.tabId].uniqueStates = [tempStateStorage[msg.tabId]];
                 connections[msg.tabId].reload = false;
                 connections[msg.tabId].changesToState = [];
                 //this is an array of objects that hold the tab's new instance
                 connections[msg.tabId].instances = [];
-
                 delete tempStateStorage[msg.tabId]
             }
-
             let connectMsg = {
                 name: 'sendingHistory',
                 tab: msg.tabId,
                 init: connections[msg.tabId].uniqueStates[0].data,
                 changes: connections[msg.tabId].changesToState
             }
-            notifyDevtools(connections[msg.tabId].port, connectMsg)
+            notifyDevtools(port, connectMsg)
         }
-        console.log(tempStateStorage, '<----- temp state in onConnect line 32')
     }
 
     //listens for port.sendMessage
     port.onMessage.addListener(extensionListener);
-
-    // port.onDisconnect.addListener(msg => {
-    //     console.log('DISCONNECT')
-    //     port.onMessage.removeListener(extensionListener);
-    //     //loop through connections object and find delete disconnected tab
-    //     let tabs = Object.keys(connections);
-    //     for (let i = 0; i < tabs.length; i++) {
-    //         if (connections[tabs[i]].port === port) {
-    //             delete connections[tabs[i]];
-    //             break;
-    //         }
-    //     }
-    // });
 });
 
 // Function to send a message to specific port:
@@ -130,7 +117,7 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
                     init: connections[tabId].uniqueStates[0].data,
                     changes: connections[tabId].changesToState,
                 }
-                notifyDevtools(connections[tabId].port, reloadMsg);
+                notifyDevtools(connections[tabId], reloadMsg);
             }
         }
         console.log('tempS Before', tempStateStorage, tabId)
@@ -158,7 +145,7 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
                 init: connections[tabId].uniqueStates[0].data,
                 changes: connections[tabId].changesToState,
             }
-            notifyDevtools(connections[tabId].port, changedMsg);
+            notifyDevtools(connections[tabId], changedMsg);
             connections[tabId].uniqueStates.push(message)
         }
         connections[tabId].instances.push(message);

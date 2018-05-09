@@ -7,7 +7,8 @@ function createPanel() {
             let _window; // This will hold the reference to panel.html's `window`
 
             // let data = [];
-            let data2 ={}
+            let data ={}
+            let data2 =[];
 
             let init;
 
@@ -24,30 +25,24 @@ function createPanel() {
 
             backgroundConnection.onMessage.addListener(msg => {
                 console.log('immmm in the devtools port.onMessage line 25', msg);
-                console.log('windowwww from the devtools', window);
 
                 // Write information to the panel, if exists.
-
                 if (_window && msg.name === 'reloadPage') {
-                    console.log('went inside line 51', _window)
                     _window.renderFunc(msg.init, msg.changes, [])
                 }
                 if (_window && msg.name === 'stateHasChanged') {
-                    console.log('we made it inside if statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!')
                     _window.renderFunc(msg.init, msg.changes, [])
                 }
                 if (_window && msg.name === 'sendingHistory') {
-                    console.log('went inside line 40', _window)
                     _window.renderFunc(msg.init, msg.changes, [])
                 }
                 if (msg.name === 'sendingHistory') {
                     console.log('went inside line 45', msg)
                     data2[msg.tab] = msg;
-                    console.log('data2', data2)
                 }
                 else {
                     console.log('we made it inside ELSEEE statement in DEVTOOLSSS!!!!!!!!!!!!!!!!!!', msg)
-                    data.push(msg);
+                    data2.push(msg);
                 }
             });
 
@@ -55,18 +50,17 @@ function createPanel() {
             extensionPanel.onShown.addListener(function tmp(panelWindow) {
                 console.log('immmm in the extension panel on shown', panelWindow);
 
-                extensionPanel.onShown.removeListener(tmp); // Run once only
+                // extensionPanel.onShown.removeListener(tmp); // Run once only
 
                 _window = panelWindow;
                 console.log('immmm the __window variable  line 544', _window);
                 // Release queued data
                 let msg;
                 console.log('CDIWT', chrome.devtools.inspectedWindow.tabId)
-                console.log('data2', data2)
                 let activeTab = chrome.devtools.inspectedWindow.tabId
-                if (data2[activeTab]) {
-                    _window.renderFunc(data2[activeTab].init, data2[activeTab].changes, []);
-                    delete data2[activeTab];
+                if (data[activeTab]) {
+                    _window.renderFunc(data[activeTab].init, data[activeTab].changes, []);
+                    delete data[activeTab];
                 }
                 // while (msg = data.shift()) {
                 //     _window.renderFunc(msg.init, msg.changes, []);
