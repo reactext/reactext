@@ -1,7 +1,7 @@
 let connections = {};
 
 //this is an array of objects that hold all temp initial state
-let tempState = [];
+let tempStateStorage = {};
 
 //This listens for a chrom.runtime.onConnect to be fired
 chrome.runtime.onConnect.addListener(port => {
@@ -12,29 +12,26 @@ chrome.runtime.onConnect.addListener(port => {
         //when a devTool is opened, this function adds a tab info to the conections object
         if (msg.name == 'connectBackAndDev') {
             if (!connections[msg.tabId]) {
-                console.log('making first connection');
                 connections[msg.tabId] = {};
                 connections[msg.tabId].port = port;
-                console.log(tempState, '<----- temp state in onConnect before assignment ')
-                connections[msg.tabId].uniqueStates = tempState;
+                connections[msg.tabId].uniqueStates = [tempStateStorage[msg.tabId]];
                 connections[msg.tabId].reload = false;
                 connections[msg.tabId].changesToState = [];
                 //this is an array of objects that hold the tab's new instance
                 connections[msg.tabId].instances = [];
 
-                tempState = [];
-                console.log(tempState, '<----- temp state in onConnect')
-                console.log('AFTERRRR making connection', connections);
+                delete tempStateStorage[msg.tabId]
             }
 
             let connectMsg = {
                 name: 'sendingHistory',
+                tab: msg.tabId,
                 init: connections[msg.tabId].uniqueStates[0].data,
                 changes: connections[msg.tabId].changesToState
             }
             notifyDevtools(connections[msg.tabId].port, connectMsg)
         }
-        console.log(tempState, '<----- temp state in onConnect line 32')
+        console.log(tempStateStorage, '<----- temp state in onConnect line 32')
     }
 
     //listens for port.sendMessage
@@ -136,9 +133,9 @@ chrome.runtime.onMessage.addListener((msg, sender, res) => {
                 notifyDevtools(connections[tabId].port, reloadMsg);
             }
         }
-        console.log('tempS Before', tempState)
-        if (tempState.length === 0) tempState.push(message);
-        console.log('tempS After', tempState)
+        console.log('tempS Before', tempStateStorage, tabId)
+        tempStateStorage[tabId] = message;
+        console.log('tempS After', tempStateStorage)
     }
 
     if (msg.from === 'content_script' && msg.name === 'changedState') {
