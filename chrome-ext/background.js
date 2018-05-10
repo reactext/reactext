@@ -22,30 +22,7 @@ const notifyDevtools = (port, msg) => {
     port.postMessage(msg);
 }
 
-//This listens for a chrome.runtime.onConnect to be fired
-chrome.runtime.onConnect.addListener(port => {
-
-    const extensionListener = (msg, sender, res) => {
-        //when a devTool is opened, this function all related tab info to the conections object from the tempStateStorage
-        if (msg.name == 'connectBackAndDev') {
-            let id = msg.tabId;
-            if (!connections[id]) {
-                createPortObj(id, port, tempStateStorage);
-            }
-            let connectMsg = {
-                name: 'sendingHistory',
-                tab: id,
-                init: connections[id].uniqueStates[0].data,
-                changes: connections[id].changesToState
-            }
-            notifyDevtools(port, connectMsg);
-        }
-    }
-   
-    //listens for port.sendMessage
-    port.onMessage.addListener(extensionListener);
-});
-
+//finds what changes have been made to the state by comparing the state directly before it
 const findChanges = (prev, curr) => {
 
     let objOfChanges = { stateHasChanged: true };
@@ -84,6 +61,32 @@ const findChanges = (prev, curr) => {
     // }
     return objOfChanges;
 }
+//********* helper functions ENDING ***********//
+
+
+//This listens for a chrome.runtime.onConnect to be fired
+chrome.runtime.onConnect.addListener(port => {
+
+    const extensionListener = (msg, sender, res) => {
+        //when a devTool is opened, this function all related tab info to the conections object from the tempStateStorage
+        if (msg.name == 'connectBackAndDev') {
+            let id = msg.tabId;
+            if (!connections[id]) {
+                createPortObj(id, port, tempStateStorage);
+            }
+            let connectMsg = {
+                name: 'sendingHistory',
+                tab: id,
+                init: connections[id].uniqueStates[0].data,
+                changes: connections[id].changesToState
+            }
+            notifyDevtools(port, connectMsg);
+        }
+    }
+   
+    //listens for port.sendMessage
+    port.onMessage.addListener(extensionListener);
+});
 
 //the following API receives a message from the content script
 //a message is sent from hook.js -> content_script.js -> background.js EVERY TIME the page's has an instance firedstate
