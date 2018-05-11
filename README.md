@@ -1,13 +1,19 @@
 # Reactext
 Reactext allows for easy state management in applications using React's Context API. 
 
-##Set up |
-1. Install from Chrome Store: Install [Reactext] (https://chrome.google.com/webstore/detail/reactext) from the Chrome web store.
+## Set up
 
-2. Make sure you've added [React Dev Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) to Chrome. 
+1. Install from Chrome Store: Install Reactext from the Chrome web store.
 
-3. Add 
+2. Make sure you've added [React Dev Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) from the Chrome web store. 
 
-4. Next import 
+## How to track Consumer / Provider relationships
 
-5. Run your React application, or open (almost!) any website running React. 
+1. Install npm 'reactext-devtool' into your application:
+      npm install --save reactex-devtool
+
+2. Next import Reactext into your React application before using React Context: 
+      import Reactext from 'reactext-devtool'
+      
+3. Pass React variable into Reactext and call the function to initiate tracking:
+      Reactext(React);
