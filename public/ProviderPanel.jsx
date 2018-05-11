@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Tree from 'react-tree-graph';
-import styles from './styles.css';
-
+import TreeView from 'react-dimensions'; 
 
 class ProviderPanel extends Component {
     constructor(props) {
@@ -124,7 +123,7 @@ class PlaceHolder extends React.Component {
             } else {
                 tmpArr.push(<li>{this.props.info[this.props.component].contextValue}</li>)
             }
-            return (<div>Values being passed down by Producer: {tmpArr}</div>)
+            return (<div className='providerTreeText' >Values being passed down by Producer: {tmpArr}</div>)
         }
     //   return (
     //     <div>
