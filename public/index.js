@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
 import App from './App.jsx';
-import style from './style.css';
+import styles from './styles.css';
+
 
 let renderApp = function renderApp(prop1, prop2, prop3) {
     console.log('PROPs render app PROP!!!!', prop1, prop2, prop3)

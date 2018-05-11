@@ -13,7 +13,6 @@ svg.custom1 .custom circle {
 	fill: #F3F3FF;
 	stroke: #2593B8;
 	stroke-width: 5px;
-	fill-width:4px;
 }
 
 svg.custom1 .custom text {
@@ -30,7 +29,7 @@ svg.custom1 .custom {
 svg.custom1 path.link {
 	fill: none;
 	stroke: #2593B8;
-	stroke-width: 1.5px;
+	stroke-width: 2px;
 }
 
 
@@ -75,16 +74,24 @@ svg.custom1 path.link {
 	word-wrap: break-word;
 }
 
-
-button{
-    width: 25%;
-    background-color: rgb(241, 241, 241);
+.navBar{
+	display:flex;
 }
-button:hover{
+
+.button{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 25%;
+	height: 25px;
+	background-color: rgb(241, 241, 241);
+	box-sizing: border-box;
+}
+.button:hover{
     background-color: rgb(225, 225, 225);
 }
 
-button:focus{
+.button:focus{
     outline: none
 }
 
@@ -168,4 +175,12 @@ body{
 .stateChangesHeader{
 	background-color: lightgrey;
 	color:black;
+}
+
+.providerTreeText{
+	background-color: pink;
+}
+
+#treeContainer{
+	background-color: purple;
 }
