@@ -1,47 +1,38 @@
-
-// start of vars and main logic
+// Global Varibales
 const devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const rid = Object.keys(window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers)[0];
 const stateSet = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._fiberRoots[rid];
 const pageSetup = {};
-let firstStatePull;
 let changes;
 let currNestedState;
+let firstStatePull;
 
+  stateSet.forEach((e) => {
+    firstStatePull = e;
+  });
 
+////////////////////////
+///func declerations////
+////////////////////////
 
-stateSet.forEach((e) => {
-  firstStatePull = e;
-});
-// //////////////
-// /functions////
-// //////////////
 const checkReactDOM = (reactDOM) => {
-  // current state will be an array of all the caches.
-  // console.log(reactDOM.current, 'im the reactDOM.current...');
   const data = {
     currentState: null,
-
-
   };
+
   const cache = [];
 
   if (reactDOM) {
-    console.log(reactDOM.current, 'hopefully this doesnt kill the computer!!!');
-    console.log(typeof reactDOM.current, 'hopefully this doesnt kill the computer!!!');
     traverseAndGatherReactDOM(reactDOM.current, cache);
   } else {
     return;
   }
 
   data.currentState = cache;
-
   return data;
 };
 
-// /////////////////////////////////////
 const traverseAndGatherReactDOM = (node, cache) => {
-  // console.log('im the node: ', node);
   const component = {
     id: null,
     name: 'dont add me',
@@ -76,7 +67,6 @@ const traverseAndGatherReactDOM = (node, cache) => {
   }
 
   if (node.memoizedProps) {
-    // component.props = stringifyData(node.memoizedProps)
     component.props = node.memoizedProps;
   }
 
@@ -92,8 +82,7 @@ const traverseAndGatherReactDOM = (node, cache) => {
 
   cache.push(component);
 };
-// ///////////////////////////////////////////////
-// OrganizeState Flattens the nested state array into our pageSetup global variable
+
 const organizeState = (state) => {
   state.forEach((child) => {
     if (typeof child.name === 'string' && child.name !== 'dont add me') {
@@ -122,13 +111,7 @@ const organizeState = (state) => {
   });
 };
 
-// console.log(pageSetup, '<=========  THIS IS THE PAGESETUP OBJECT BEFORE THE providerConsumerData() FUNCITON GET CALLED')
-
-
-// ///////////////////////////////////////////////
-
-// //////////////////////////////////
-function stringifyData(obj) {
+const stringifyData = (obj) => {
   const data = JSON.parse(JSON.stringify(obj, (key, value) => {
     if (typeof value === 'function') {
       value = value.toString();
@@ -157,42 +140,9 @@ const transmitChangedData = (state) => {
   window.dispatchEvent(customEvent);
 };
 
-// ///////////////
-// /Main Logic////
-// ///////////////
-
-const nestedState = checkReactDOM(firstStatePull.current.stateNode);
-organizeState(nestedState.currentState[0].children);
-// console.log(nestedState.currentState[0].children, '<===============look in here for the original nested object!!!')
-providerConsumerData(nestedState.currentState[0].children);
-transmitData(pageSetup);
-
-// ////////////////////
-// /Changes to State///
-// ////////////////////
-
-// Monkey patch into devTools object in React devTools
-(function connectReactDevTool() {
-  devTools.onCommitFiberRoot = (original => (...args) => {
-    getStateChanges(args[1]);
-    return original(...args);
-  })(devTools.onCommitFiberRoot);
-}());
-
-// getStatChanges takes in an instance and
-async function getStateChanges(instance) {
-  try {
-    changes = await instance;
-    currNestedState = await checkReactDOM(changes);
-    organizeState(currNestedState.currentState[0].children);
-    transmitChangedData(pageSetup);
-  } catch (e) {
-  }
-}
-// state
-function getConsumerContext(state, componentName) {
+const getConsumerContext = (state, componentName) => {
   if (state.length === 0) return;
-if (typeof state === 'object' && !Array.isArray(state)){
+  if (typeof state === 'object' && !Array.isArray(state)){
   if (state.props && state.props.children && typeof state.props.children === 'function') {
     const strFunc = state.props.children.toString();
     const regex = /\((.*)\)/;
@@ -201,12 +151,9 @@ if (typeof state === 'object' && !Array.isArray(state)){
 
     pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
   }
-} else {
+  } else {
 
   state.forEach((cObj) => {
-    console.log(state, 'what is in this state array from line 194 =====> componenname', componentName)
-    console.log(cObj, 'One of these should be the context value of Marketcreator!')
-    console.log(cObj.props.children, 'One of these should be the context value of Marketcreator!')
     if (cObj.props && cObj.props.children && typeof cObj.props.children === 'function') {
       const strFunc = cObj.props.children.toString();
       const regex = /\((.*)\)/;
@@ -216,12 +163,10 @@ if (typeof state === 'object' && !Array.isArray(state)){
       pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
     }
   });
-}
+  }
 }
 
-/////////////////////////////////// PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
-
-function providerConsumerData(state, componentName = '', providerSymbols = []) {
+const providerConsumerData = (state, componentName = '', providerSymbols = []) =>  {
 
   //checking to see if the state(typeof array) has more than one object. If it does we should iterate over the array
   if (state.length > 1) {
@@ -254,7 +199,6 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
           pageSetup[componentName].consumer = true;
           // pageSetup[componentName].tracker = state[0].name.tracker;
           // add regex stuff
-          console.log(componentName, 'one of these shuld be the marketsContainer', obj, '<=========this one is the obj.children');
 
           getConsumerContext(obj, componentName);
           getConsumerContext(obj.children, componentName);
@@ -288,8 +232,6 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
     });
   }
 
-
-
   /// SHOULD ONLY RUN WHEN STATE ARRAY HAS ONE OBJECT
   if (state.length === 1) {
     if (typeof state[0].name === 'string' && state[0].name !== 'dont add me') {
@@ -316,12 +258,10 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
       /////////////////______START____CONSUMER_BLOCK____//////////////////////////////////
       if (state[0].name.$$typeof.toString() === 'Symbol(react.context)') {
         if (pageSetup[componentName].Active_Provider) return;
-        console.log(componentName, 'this should be the component name inside the consumer block')
         const trackerId = [];
         pageSetup[componentName].consumer = true;
         // pageSetup[componentName].tracker = state[0].name.tracker;
 
-        console.log(componentName, 'one of these shuld be the marketsContainer', state[0], '<=========this one is the obj.children');
         // add regex stuff
         getConsumerContext(state, componentName);
         // adding stuff to
@@ -344,8 +284,7 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
       }
     /////////////////______END____CONSUMER_BLOCK____//////////////////////////////////
     }
-}
-
+  }
 
   // does children array have any objects?
   if (state.length === 1) {
@@ -355,6 +294,28 @@ function providerConsumerData(state, componentName = '', providerSymbols = []) {
   }
 }
 
-/////////////////////////////////// END ____PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
+/////////////////
+///Main Logic////
+/////////////////
 
-console.log(pageSetup, 'im the page set up last thing in hook.js');
+const nestedState = checkReactDOM(firstStatePull.current.stateNode);
+organizeState(nestedState.currentState[0].children);
+providerConsumerData(nestedState.currentState[0].children);
+transmitData(pageSetup);
+
+(function connectReactDevTool() {
+  devTools.onCommitFiberRoot = (original => (...args) => {
+    getStateChanges(args[1]);
+    return original(...args);
+  })(devTools.onCommitFiberRoot);
+}());
+
+async function getStateChanges(instance) {
+  try {
+    changes = await instance;
+    currNestedState = await checkReactDOM(changes);
+    organizeState(currNestedState.currentState[0].children);
+    transmitChangedData(pageSetup);
+  } catch (e) {
+  }
+}

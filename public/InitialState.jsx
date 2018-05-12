@@ -6,6 +6,7 @@ class InitialState extends Component {
     super(props);
   }
 
+  
   render() {
     console.log('props in initial state', this.props)
     let initialStateComp = [];
