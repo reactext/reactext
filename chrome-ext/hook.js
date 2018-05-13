@@ -167,11 +167,6 @@ const transmitChangedData = (state) => {
 // /Main Logic////
 // ///////////////
 
-// const nestedState = checkReactDOM(firstStatePull.current.stateNode);
-// organizeState(nestedState.currentState[0].children);
-// providerConsumerData(nestedState.currentState[0].children);
-// transmitData(pageSetup);
-
 (function setInitialState() {
   if (reactInstance && reactInstance.version) {
     //get initial state for 16 & 16+
@@ -193,10 +188,21 @@ const transmitChangedData = (state) => {
 // Monkey patch into devTools object in React devTools
 (function connectReactDevTool() {
   //Error if React Developer Tools is not installed
-  devTools.onCommitFiberRoot = (original => (...args) => {
-    getStateChanges(args[1]);
-    return original(...args);
-  })(devTools.onCommitFiberRoot);
+  if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+    console.log('React Dev Tools must be installed for Reactext');
+    return;
+  } else if (!reactInstance) {
+    //Error if React app is not detected
+    console.log('React not detected');
+    return;
+  }
+  // for React 16 and 16+
+  if (reactInstance && reactInstance.version) {
+    devTools.onCommitFiberRoot = (original => (...args) => {
+      getStateChanges(args[1]);
+      return original(...args);
+    })(devTools.onCommitFiberRoot);
+  }
 }());
 
 // getStateChanges takes in an instance 
