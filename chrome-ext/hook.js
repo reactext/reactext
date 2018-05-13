@@ -7,21 +7,16 @@ let reactInstance = reactInstances[rid];
 
 const pageSetup = {};
 
-let firstStatePull;
 let initialState;
-let nestedState;
 let changes;
 let currNestedState;
 
-// stateSet.forEach((e) => {
-//   firstStatePull = e;
-// });
 
 // //////////////
 // /functions////
 // //////////////
-//get initial state and only run once
 
+//get initial state and only run once
 const getInitialStateOnce = () => {
   let run = false;
   return function getInitialState() {
