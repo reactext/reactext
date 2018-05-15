@@ -1,23 +1,41 @@
-// Global Varibales
-const devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-const rid = Object.keys(window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers)[0];
-const stateSet = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._fiberRoots[rid];
+
+// start of vars and main logic
+let devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+let reactInstances = devTools._renderers;
+let rid = Object.keys(reactInstances)[0];
+let reactInstance = reactInstances[rid];
+
 const pageSetup = {};
+
+let initialState;
 let changes;
 let currNestedState;
 let firstStatePull;
 
-console.log(stateSet, 'stateSet');
 
-stateSet.forEach((e) => {
-  firstStatePull = e;
-});
+// //////////////
+// /functions////
+// //////////////
 
-////////////////////////
-///func declerations////
-////////////////////////
+//get initial state and only run once
+const getInitialStateOnce = () => {
+  let run = false;
+  return function getInitialState() {
+    if (!run) {
+      //grab initial state
+      let initStateSet = devTools._fiberRoots[rid];
+      initStateSet.forEach(item => initialState = item);
+      //parse state
+      initialState = checkReactDOM(initialState.current.stateNode);
+      run = true;
+    }
+  };
+}
 
-const checkReactDOM = (reactDOM) => {
+//set initial state
+let setInitialStateOnce = getInitialStateOnce();
+
+const checkReactDOM = reactDOM => {
   const data = {
     currentState: null,
   };
@@ -29,7 +47,6 @@ const checkReactDOM = (reactDOM) => {
   } else {
     return;
   }
-
   data.currentState = cache;
   return data;
 };
@@ -83,7 +100,6 @@ const traverseAndGatherReactDOM = (node, cache) => {
   if (node.sibling !== null) {
     traverseAndGatherReactDOM(node.sibling, cache);
   }
-
   cache.push(component);
 };
 
@@ -101,7 +117,6 @@ const organizeState = (state) => {
       // This block is to create the children property on the component object even if they dont actually have children.
       while (tempChild) {
         tempChild.children.forEach((obj) => {
-          // if need more data for tree do below
           if (typeof obj.name === 'string' && obj.name !== 'dont add me') {
             pageSetup[child.name].children.push(obj.name);
           }
@@ -122,13 +137,12 @@ const stringifyData = (obj) => {
     if (typeof value === 'function') {
       value = value.toString();
     }
-
     return value;
   }));
   return data;
 }
 
-const transmitData = (state) => {
+const transmitInitialData = (state) => {
   const customEvent = new CustomEvent('Reactext', {
     detail: {
       data: stringifyData(state),
@@ -162,15 +176,88 @@ const getConsumerContext = (state, componentName) => {
   state.forEach((cObj) => {
     if (cObj.props && cObj.props.children && typeof cObj.props.children === 'function') {
       const strFunc = cObj.props.children.toString();
+// ///////////////
+// /Main Logic////
+// ///////////////
+
+(function setInitialState() {
+  if (reactInstance && reactInstance.version) {
+    //get initial state for 16 & 16+
+    setInitialStateOnce();
+    setTimeout(() => {
+      organizeState(initialState.currentState[0].children);
+      providerConsumerData(initialState.currentState[0].children);
+      transmitInitialData(pageSetup);
+    }, 100);
+  } else {
+    console.log("React Dev Tools is not found")
+  }
+}());
+
+// ////////////////////
+// /Changes to State///
+// ////////////////////
+
+// Monkey patch into devTools object in React devTools
+(function connectReactDevTool() {
+  //Error if React Developer Tools is not installed
+  if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+    console.log('React Dev Tools must be installed for Reactext');
+    return;
+  } else if (!reactInstance) {
+    //Error if React app is not detected
+    console.log('React not detected');
+    return;
+  }
+  // for React 16 and 16+
+  if (reactInstance && reactInstance.version) {
+    devTools.onCommitFiberRoot = (original => (...args) => {
+      getStateChanges(args[1]);
+      return original(...args);
+    })(devTools.onCommitFiberRoot);
+  }
+}());
+
+// getStateChanges takes in an instance
+async function getStateChanges(instance) {
+  try {
+    changes = await instance;
+    currNestedState = await checkReactDOM(changes);
+    organizeState(currNestedState.currentState[0].children);
+    providerConsumerData(currNestedState.currentState[0].children);
+    transmitChangedData(pageSetup);
+  } catch (e) {
+  }
+}
+
+// state
+function getConsumerContext(state, componentName) {
+  if (state.length === 0) return;
+  if (typeof state === 'object' && !Array.isArray(state)) {
+    if (state.props && state.props.children && typeof state.props.children === 'function') {
+      const strFunc = state.props.children.toString();
       const regex = /\((.*)\)/;
       const argumentInFunc = regex.exec(strFunc)[1];
-      const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\s`, 'gm');
+      const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\W`, 'gm');
 
       pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
     }
-  });
+  } else {
+
+    state.forEach((cObj) => {
+      if (cObj.props && cObj.props.children && typeof cObj.props.children === 'function') {
+        const strFunc = cObj.props.children.toString();
+        const regex = /\((.*)\)/;
+        const argumentInFunc = regex.exec(strFunc)[1];
+        const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\s`, 'gm');
+
+        pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
+      }
+    });
   }
 }
+
+/////////////////////////////////// PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
 
 const providerConsumerData = (state, componentName = '', providerSymbols = []) =>  {
 
@@ -181,18 +268,15 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
       if (typeof obj.name === 'string' && obj.name !== 'dont add me') {
         componentName = obj.name;
       }
-
-      //******* If the object.name is not a struing type but rather another object than it will be in the format {$$typeof: Symbol(react.provider/context), _context: {…}, tracker: Symbol(uniqeId)}
+      //******* If the object.na yeah where the new exploits his this a really run it once right what function like that if heme is not a struing type but rather another object than it will be in the format {$$typeof: Symbol(react.provider/context), _context: {…}, tracker: Symbol(uniqeId)}
       // If it is an object than we need to run through provider and consumer blocks and create the appropriate property using the passed in <componentName>
       /////////////////////////////////////////_____ADDITION_____//////////////////////////////////////////////////
       if (typeof obj.name === 'object') {
         if (obj.name.$$typeof.toString() === 'Symbol(react.provider)') {
-          // do something
           // add proper stuff to the pageSetup
           pageSetup[componentName].provider = true;
           pageSetup[componentName].contextValue = obj.props.value;
           pageSetup[componentName].tracker = obj.name.tracker;
-          // does children array have any objects?
           const subArr = [];
           subArr.push(componentName, obj.name.tracker);
           providerSymbols.push(subArr);
@@ -203,12 +287,8 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
 
           const trackerId = [];
           pageSetup[componentName].consumer = true;
-          // pageSetup[componentName].tracker = state[0].name.tracker;
-          // add regex stuff
-
           getConsumerContext(obj, componentName);
           getConsumerContext(obj.children, componentName);
-          // adding stuff to
           const consumerId = [];
           let currentChild = obj;
 
@@ -217,19 +297,14 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
 
             currentChild = currentChild.children[0];
           }
-
           providerSymbols.forEach((arr) => {
             if (consumerId.includes(arr[1])) {
               trackerId.push(arr[0]);
             }
           });
           pageSetup[componentName].Active_Provider = trackerId;
-
         }
       }
-      //////////////////______END OF ADDITION___________////////////////////
-
-
       ////// AFTER getting provider/consumer data from obj.name we still need to call the function for its children
       if (obj.children.length > 0) {
         // if so PCD(children array)
@@ -259,18 +334,16 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
         subArr.push(componentName, state[0].name.tracker);
         providerSymbols.push(subArr);
       }
-            /////////////////______END____PROVIDER_BLOCK____//////////////////////////////////
+      /////////////////______END____PROVIDER_BLOCK____//////////////////////////////////
 
       /////////////////______START____CONSUMER_BLOCK____//////////////////////////////////
       if (state[0].name.$$typeof.toString() === 'Symbol(react.context)') {
         if (pageSetup[componentName].Active_Provider) return;
         const trackerId = [];
         pageSetup[componentName].consumer = true;
-        // pageSetup[componentName].tracker = state[0].name.tracker;
 
-        // add regex stuff
         getConsumerContext(state, componentName);
-        // adding stuff to
+
         const consumerId = [];
         let currentChild = state[0];
 
@@ -288,11 +361,9 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
         pageSetup[componentName].Active_Provider = trackerId;
 
       }
-    /////////////////______END____CONSUMER_BLOCK____//////////////////////////////////
+      /////////////////______END____CONSUMER_BLOCK____//////////////////////////////////
     }
   }
-
-  // does children array have any objects?
   if (state.length === 1) {
     if (state[0].children.length > 0) {
       providerConsumerData(state[0].children, componentName, providerSymbols);
