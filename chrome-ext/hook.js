@@ -7,9 +7,11 @@ let changes;
 let currNestedState;
 let firstStatePull;
 
-  stateSet.forEach((e) => {
-    firstStatePull = e;
-  });
+console.log(stateSet, 'stateSet');
+
+stateSet.forEach((e) => {
+  firstStatePull = e;
+});
 
 ////////////////////////
 ///func declerations////
@@ -36,6 +38,7 @@ const traverseAndGatherReactDOM = (node, cache) => {
   const component = {
     id: null,
     name: 'dont add me',
+    immediateChildren:'no children',
     state: null,
     props: null,
     children: [],
@@ -49,6 +52,7 @@ const traverseAndGatherReactDOM = (node, cache) => {
   if (node.type) {
     if (node.type.name) {
       component.name = node.type.name;
+      component.immediateChildren = node.type.prototype.render;
     }
     if (typeof node.type === 'object' && node.type !== null) {
       component.name = node.type;
@@ -91,7 +95,9 @@ const organizeState = (state) => {
       pageSetup[child.name].state = child.state;
       pageSetup[child.name].children = [];
       let tempChild = child;
-
+      if(child.immediateChildren){
+        getImmediateChildren(child.immediateChildren, child.name);
+      }
       // This block is to create the children property on the component object even if they dont actually have children.
       while (tempChild) {
         tempChild.children.forEach((obj) => {
@@ -293,6 +299,20 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
     }
   }
 }
+const getImmediateChildren = (string, name) => {
+  let string1 = string.toString();
+  const regex = /.createElement\(\n?(.*)\,\s/gm;
+  const newRegex =  /.createElement\(\n?(.*)\,/gm;
+  let newString = string1.match(regex);
+  let final = string1.match(regex).map(str => {
+    return str.replace(newRegex, '$1').trim();
+  });
+  let newResult = final.filter(str => {
+    return str !== "'img'" && str !== '"div"' && str !== "'h1'" && str !== '"h1"' && str.includes('.Consumer') === false && str.includes('.Provider') === false && str !== "'div'"
+  })
+  return pageSetup[name].immediateChildren = newResult;
+}
+
 
 /////////////////
 ///Main Logic////
