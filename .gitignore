@@ -4,3 +4,4 @@ chrome-ext/build/
 test-devtools.js
 tests/
 public/consumerComponent.jsx
+.DS_Store   
