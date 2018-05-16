@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-// Global Varibales
-const devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-const rid = Object.keys(window.__REACT_DEVTOOLS_GLOBAL_HOOK__._renderers)[0];
-const stateSet = window.__REACT_DEVTOOLS_GLOBAL_HOOK__._fiberRoots[rid];
-const pageSetup = {};
-=======
-
 // start of vars and main logic
 let devTools = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 let reactInstances = devTools._renderers;
@@ -15,28 +7,13 @@ let reactInstance = reactInstances[rid];
 const pageSetup = {};
 
 let initialState;
->>>>>>> f2b3fc8345c2623cdb8ed09ca1fa7a7fcc5bcffd
 let changes;
 let currNestedState;
-let firstStatePull;
 
-<<<<<<< HEAD
-console.log(stateSet, 'stateSet');
+// stateSet.forEach((e) => {
+//   firstStatePull = e;
+// });
 
-stateSet.forEach((e) => {
-  firstStatePull = e;
-});
-
-////////////////////////
-///func declerations////
-////////////////////////
-
-const checkReactDOM = (reactDOM) => {
-=======
-
-// //////////////
-// /functions////
-// //////////////
 
 //get initial state and only run once
 const getInitialStateOnce = () => {
@@ -57,7 +34,6 @@ const getInitialStateOnce = () => {
 let setInitialStateOnce = getInitialStateOnce();
 
 const checkReactDOM = reactDOM => {
->>>>>>> f2b3fc8345c2623cdb8ed09ca1fa7a7fcc5bcffd
   const data = {
     currentState: null,
   };
@@ -73,11 +49,12 @@ const checkReactDOM = reactDOM => {
   return data;
 };
 
+
 const traverseAndGatherReactDOM = (node, cache) => {
   const component = {
     id: null,
     name: 'dont add me',
-    immediateChildren:'no children',
+    immediateChildren: 'no children',
     state: null,
     props: null,
     children: [],
@@ -125,6 +102,7 @@ const traverseAndGatherReactDOM = (node, cache) => {
   cache.push(component);
 };
 
+
 const organizeState = (state) => {
   state.forEach((child) => {
     if (typeof child.name === 'string' && child.name !== 'dont add me') {
@@ -133,7 +111,7 @@ const organizeState = (state) => {
       pageSetup[child.name].state = child.state;
       pageSetup[child.name].children = [];
       let tempChild = child;
-      if(child.immediateChildren){
+      if (child.immediateChildren) {
         getImmediateChildren(child.immediateChildren, child.name);
       }
       // This block is to create the children property on the component object even if they dont actually have children.
@@ -154,12 +132,8 @@ const organizeState = (state) => {
   });
 };
 
-<<<<<<< HEAD
+
 const stringifyData = (obj) => {
-=======
-////////////////////////////////////
-function stringifyData(obj) {
->>>>>>> f2b3fc8345c2623cdb8ed09ca1fa7a7fcc5bcffd
   const data = JSON.parse(JSON.stringify(obj, (key, value) => {
     if (typeof value === 'function') {
       value = value.toString();
@@ -187,24 +161,31 @@ const transmitChangedData = (state) => {
   window.dispatchEvent(customEvent);
 };
 
-<<<<<<< HEAD
 const getConsumerContext = (state, componentName) => {
   if (state.length === 0) return;
-  if (typeof state === 'object' && !Array.isArray(state)){
-  if (state.props && state.props.children && typeof state.props.children === 'function') {
-    const strFunc = state.props.children.toString();
-    const regex = /\((.*)\)/;
-    const argumentInFunc = regex.exec(strFunc)[1];
-    const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\W`, 'gm');
+  if (typeof state === 'object' && !Array.isArray(state)) {
+    if (state.props && state.props.children && typeof state.props.children === 'function') {
+      const strFunc = state.props.children.toString();
+      const regex = /\((.*)\)/;
+      const argumentInFunc = regex.exec(strFunc)[1];
+      const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\W`, 'gm');
 
-    pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
-  }
+      pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
+    }
   } else {
+    state.forEach((cObj) => {
+      if (cObj.props && cObj.props.children && typeof cObj.props.children === 'function') {
+        const strFunc = cObj.props.children.toString();
+        const regex = /\((.*)\)/;
+        const argumentInFunc = regex.exec(strFunc)[1];
+        const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\s`, 'gm');
 
-  state.forEach((cObj) => {
-    if (cObj.props && cObj.props.children && typeof cObj.props.children === 'function') {
-      const strFunc = cObj.props.children.toString();
-=======
+        pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
+      }
+    });
+  }
+}
+
 // ///////////////
 // /Main Logic////
 // ///////////////
@@ -247,7 +228,7 @@ const getConsumerContext = (state, componentName) => {
   }
 }());
 
-// getStateChanges takes in an instance 
+// getStateChanges takes in an instance
 async function getStateChanges(instance) {
   try {
     changes = await instance;
@@ -255,47 +236,11 @@ async function getStateChanges(instance) {
     organizeState(currNestedState.currentState[0].children);
     providerConsumerData(currNestedState.currentState[0].children);
     transmitChangedData(pageSetup);
-  } catch (e) {
-  }
+  } catch (e) {}
 }
-
-// state
-function getConsumerContext(state, componentName) {
-  if (state.length === 0) return;
-  if (typeof state === 'object' && !Array.isArray(state)) {
-    if (state.props && state.props.children && typeof state.props.children === 'function') {
-      const strFunc = state.props.children.toString();
->>>>>>> f2b3fc8345c2623cdb8ed09ca1fa7a7fcc5bcffd
-      const regex = /\((.*)\)/;
-      const argumentInFunc = regex.exec(strFunc)[1];
-      const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\W`, 'gm');
-
-      pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
-    }
-<<<<<<< HEAD
-  });
-  }
-}
-=======
-  } else {
-
-    state.forEach((cObj) => {
-      if (cObj.props && cObj.props.children && typeof cObj.props.children === 'function') {
-        const strFunc = cObj.props.children.toString();
-        const regex = /\((.*)\)/;
-        const argumentInFunc = regex.exec(strFunc)[1];
-        const regex1 = new RegExp(`${argumentInFunc}\\.(.*?)\\s`, 'gm');
-
-        pageSetup[componentName].Consumer_Context_Used = strFunc.match(regex1);
-      }
-    });
-  }
-}
-
 /////////////////////////////////// PROVIDER CONSUMER FUNCTION ///////////////////////////////////////////////////// /////////////////
->>>>>>> f2b3fc8345c2623cdb8ed09ca1fa7a7fcc5bcffd
 
-const providerConsumerData = (state, componentName = '', providerSymbols = []) =>  {
+const providerConsumerData = (state, componentName = '', providerSymbols = []) => {
 
   //checking to see if the state(typeof array) has more than one object. If it does we should iterate over the array
   if (state.length > 1) {
@@ -323,12 +268,6 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
 
           const trackerId = [];
           pageSetup[componentName].consumer = true;
-<<<<<<< HEAD
-          // pageSetup[componentName].tracker = state[0].name.tracker;
-          // add regex stuff
-
-=======
->>>>>>> f2b3fc8345c2623cdb8ed09ca1fa7a7fcc5bcffd
           getConsumerContext(obj, componentName);
           getConsumerContext(obj.children, componentName);
           const consumerId = [];
@@ -384,10 +323,6 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
         const trackerId = [];
         pageSetup[componentName].consumer = true;
 
-<<<<<<< HEAD
-        // add regex stuff
-=======
->>>>>>> f2b3fc8345c2623cdb8ed09ca1fa7a7fcc5bcffd
         getConsumerContext(state, componentName);
 
         const consumerId = [];
@@ -410,21 +345,18 @@ const providerConsumerData = (state, componentName = '', providerSymbols = []) =
       /////////////////______END____CONSUMER_BLOCK____//////////////////////////////////
     }
   }
-<<<<<<< HEAD
-
-  // does children array have any objects?
-=======
->>>>>>> f2b3fc8345c2623cdb8ed09ca1fa7a7fcc5bcffd
   if (state.length === 1) {
     if (state[0].children.length > 0) {
       providerConsumerData(state[0].children, componentName, providerSymbols);
     }
   }
 }
+
+
 const getImmediateChildren = (string, name) => {
   let string1 = string.toString();
   const regex = /.createElement\(\n?(.*)\,\s/gm;
-  const newRegex =  /.createElement\(\n?(.*)\,/gm;
+  const newRegex = /.createElement\(\n?(.*)\,/gm;
   let newString = string1.match(regex);
   let final = string1.match(regex).map(str => {
     return str.replace(newRegex, '$1').trim();
@@ -433,31 +365,4 @@ const getImmediateChildren = (string, name) => {
     return str !== "'img'" && str !== '"div"' && str !== "'h1'" && str !== '"h1"' && str.includes('.Consumer') === false && str.includes('.Provider') === false && str !== "'div'"
   })
   return pageSetup[name].immediateChildren = newResult;
-}
-
-
-/////////////////
-///Main Logic////
-/////////////////
-
-const nestedState = checkReactDOM(firstStatePull.current.stateNode);
-organizeState(nestedState.currentState[0].children);
-providerConsumerData(nestedState.currentState[0].children);
-transmitData(pageSetup);
-
-(function connectReactDevTool() {
-  devTools.onCommitFiberRoot = (original => (...args) => {
-    getStateChanges(args[1]);
-    return original(...args);
-  })(devTools.onCommitFiberRoot);
-}());
-
-async function getStateChanges(instance) {
-  try {
-    changes = await instance;
-    currNestedState = await checkReactDOM(changes);
-    organizeState(currNestedState.currentState[0].children);
-    transmitChangedData(pageSetup);
-  } catch (e) {
-  }
 }
