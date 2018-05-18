@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Tree from 'react-tree-graph';
-import TreeView from 'react-dimensions'; 
+import TreeView from 'react-dimensions';
 
 class ProviderPanel extends Component {
     constructor(props) {
@@ -71,16 +71,16 @@ class ProviderPanel extends Component {
                     }
                 } });
             })
-            trees.push(<Tree  data={data} height={200} width={400} svgProps={{ className: 'custom1'}}   />);
+            trees.push(<Tree  data={data} height={200} width={400} animated svgProps={{ className: 'custom1'}}   />);
         })
 
         ////////////////////_Conditional_Rendering_///////////
         return (
             <div className="custom-container">
-                <div id='treeContainer'>
+                <div className='treeContainer'>
                 {trees}
                 </div>
-                <div className='providerContent'>
+                <div className='textContent'>
                 {this.state.showComponent ? <PlaceHolder info={this.props.initialState} component ={this.state.component}/> : null}
                 </div>
             </div>

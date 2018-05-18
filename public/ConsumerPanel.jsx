@@ -74,16 +74,16 @@ class ConsumerPanel extends Component {
                     }
                 });
             })
-            trees.push(<Tree data={data} height={200} width={400} svgProps={{ className: 'custom1' }} />);
+            trees.push(<Tree data={data} height={200} width={400} animated svgProps={{ className: 'custom1' }} />);
         })
 
         ////////////////////_Conditional_Rendering_///////////
         return (
             <div className="custom-container">
-                <div id='treeContainer'>
+                <div className='treeContainer'>
                     {trees}
                 </div>
-                <div className='consumerContent'>
+                <div className='textContent'>
                     {this.state.showComponent ?  <PlaceHolder info={this.props.initialState} component={this.state.component} /> : null}
                 </div>
             </div>
