@@ -9,7 +9,7 @@ Reactext allows for easy state management in applications using React's Context 
 
 ## How to track Consumer / Provider relationships
 
-<a href='https://libraries.io/npm/reactext-devtool' target='blank'> TEST</a>
+<a href='https://libraries.io/npm/reactext-devtool' target="blank"> TEST</a>
 
 1. Install npm ['reactext-devtool'](https://libraries.io/npm/reactext-devtool){:target = "_blank"} into your application:
       npm install --save reactex-devtool
