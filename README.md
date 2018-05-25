@@ -9,7 +9,7 @@ Reactext allows for easy state management in applications using React's Context 
 
 ## How to track Consumer / Provider relationships
 
-1. Install npm 'reactext-devtool' into your application:
+1. Install npm ['reactext-devtool'](https://libraries.io/npm/reactext-devtool) into your application:
       npm install --save reactex-devtool
 
 2. Next import Reactext into your React application before using React Context: 
