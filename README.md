@@ -5,7 +5,7 @@ Reactext allows for easy state management in applications using React's Context 
 
 1. Install from Chrome Store: Install [Reactext](https://chrome.google.com/webstore/detail/reactext/dhadgcdngabjfldgcpdmdldpmhfkmbpj) from the Chrome web store.
 
-2. Make sure you've added [React Dev Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) from the Chrome web store. 
+2. Make sure you've added [React Dev Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi){:target="_blank"} from the Chrome web store. 
 
 ## How to track Consumer / Provider relationships
 
